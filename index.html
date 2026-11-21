@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ultimate Sales Hub - Pro Max 🚀</title>
+<!-- خط Cairo الفخم -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0a0c;--card-bg:rgba(28, 28, 30, 0.6);--text:#fff;--text-muted:#a1a1a6;--primary:#34c759;--secondary:#0a84ff;--border:rgba(255,255,255,0.1);--danger:#ff453a;--success:#34c759;--warning:#ffd60a;--whatsapp:#25D366;--email:#ea4335;--purple:#5e5ce6;--excel-green:#217346}
+body.light{--bg:#f2f2f7;--card-bg:rgba(255, 255, 255, 0.7);--text:#1c1c1e;--text-muted:#6e6e73;--border:rgba(0,0,0,0.1)}
+*{box-sizing:border-box; font-family:'Cairo', sans-serif; transition:background-color .3s, color .3s, border-color .3s; -webkit-tap-highlight-color: transparent;}
+
+body{background:var(--bg);color:var(--text);margin:0;padding:0 0 85px; background-image: radial-gradient(circle at 10% 20%, rgba(94, 92, 230, 0.15) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(52, 199, 89, 0.1) 0%, transparent 40%); background-attachment: fixed;}
+
+/* Splash Screen */
+#splashScreen{position:fixed;inset:0;background:#0a0a0c;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s ease-out, visibility 0.8s}
+#splashScreen.hide{opacity:0;visibility:hidden}
+.splash-logo{font-size:90px;animation:pulse 2s infinite;filter:drop-shadow(0 0 20px rgba(52,199,89,0.5))}
+.splash-text{color:#fff;font-size:24px;font-weight:900;margin-top:20px;letter-spacing:1px;background:linear-gradient(90deg, #34c759, #0a84ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(0.95)}50%{transform:scale(1.05)}}
+@keyframes shine{0%{filter:brightness(1)}50%{filter:brightness(1.5)}100%{filter:brightness(1)}}
+
+.container{padding:15px;max-width:460px;margin:auto}
+.header{text-align:center;margin-bottom:20px;position:relative; padding-top:5px;}
+.header h1{font-size:24px;font-weight:900;margin:0 0 5px;background:linear-gradient(90deg, #fff, #a1a1a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+body.light .header h1{background:linear-gradient(90deg, #1c1c1e, #6e6e73);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header p{font-size:12px;color:var(--text-muted);margin:0}
+.header-actions{position:absolute;left:0;top:0;display:flex;gap:8px}
+.header-btn{background:var(--card-bg);backdrop-filter:blur(10px);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
+
+/* Glassmorphism Cards */
+.card, .chart-box, .dash-stat, .customer-card, .contract-card, .report-box, .archive-folder, .archive-item, .email-composer {
+    background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--border); box-shadow:0 8px 32px 0 rgba(0,0,0,0.15); border-radius:20px;
+}
+.card{ padding:20px; margin-bottom:15px;}
+.card h3{margin:0 0 15px;font-size:16px;font-weight:800;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
+
+input,select,textarea{background:rgba(0,0,0,0.2);border:1px solid var(--border);color:var(--text);padding:14px;border-radius:12px;width:100%;font-size:14px;margin-bottom:12px;font-weight:600;}
+body.light input,body.light select,body.light textarea{background:rgba(255,255,255,0.5)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 10px rgba(52,199,89,0.2)}
+label{font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;font-weight:700}
+
+/* Buttons */
+.btn{background:linear-gradient(135deg, var(--primary), #2ea44f);color:#fff;border:none;padding:14px;border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;width:100%;margin-bottom:8px;display:flex;justify-content:center;align-items:center;gap:8px;text-align:center;box-shadow:0 4px 15px rgba(52,199,89,0.3);transition:transform 0.1s}
+.btn:active{transform:scale(0.97)}
+.btn-wa{background:linear-gradient(135deg, #25D366, #128C7E);box-shadow:0 4px 15px rgba(37,211,102,0.3)}
+.btn-email{background:linear-gradient(135deg, #ea4335, #c5221f);box-shadow:0 4px 15px rgba(234,67,53,0.3)}
+.btn-excel{background:linear-gradient(135deg, #217346, #185a36);box-shadow:0 4px 15px rgba(33,115,70,0.3)}
+.btn-gray{background:#444;color:#fff;box-shadow:none}
+.btn-sm{padding:10px;font-size:12px;width:auto}
+.btn-danger{background:linear-gradient(135deg, #ff453a, #d70015);box-shadow:0 4px 15px rgba(255,69,58,0.3)}
+.btn-save{background:linear-gradient(135deg, #0a84ff, #0066cc);box-shadow:0 4px 15px rgba(10,132,255,0.3)}
+.btn-purple{background:linear-gradient(135deg, #5e5ce6, #3634a3);box-shadow:0 4px 15px rgba(94,92,230,0.3)}
+.btn-warning{background:linear-gradient(135deg, #ffd60a, #ff9f0a);color:#000;box-shadow:0 4px 15px rgba(255,214,10,0.3)}
+
+.save-row{display:flex;gap:8px;margin-bottom:15px;margin-top:5px}.save-row .btn{padding:12px 5px;font-size:12px;margin-bottom:0}
+.row{display:flex;gap:10px;margin-bottom:10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:rgba(20,20,22,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0;z-index:1000;overflow-x:auto}
+body.light .bottom-nav{background:rgba(255,255,255,0.85)}
+.nav-item{display:flex;flex-direction:column;align-items:center;font-size:9px;color:var(--text-muted);cursor:pointer;flex:1;min-width:45px;position:relative;font-weight:700}
+.nav-item.active{color:var(--primary)}
+.nav-item span{font-size:20px;margin-bottom:4px;transition:transform .3s}
+.nav-item.active span{transform:translateY(-3px)}
+.nav-badge{position:absolute;top:-2px;right:6px;background:var(--danger);color:#fff;font-size:9px;padding:2px 5px;border-radius:10px;font-weight:bold;min-width:16px;text-align:center;box-shadow:0 2px 5px rgba(255,69,58,0.5)}
+
+.tab-content{display:none;animation:fadeIn .4s cubic-bezier(0.2, 0.8, 0.2, 1)}.tab-content.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CRM */
+.customer-card{padding:15px;margin-bottom:15px;position:relative;overflow:hidden;}
+.customer-card::before{content:'';position:absolute;top:0;right:0;bottom:0;width:6px;background:var(--secondary)}
+.status-waiting::before{background:var(--warning)}.status-activated::before{background:var(--success)}.status-rejected::before{background:var(--danger)}.status-no-answer::before{background:#ff9f0a}.status-not-interested::before{background:#666}
+.crm-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.crm-name{font-size:17px;font-weight:800;color:var(--text);margin-bottom:6px}
+.crm-phone-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.crm-phone{font-size:14px;color:var(--text-muted);font-family:monospace;direction:ltr;font-weight:700}
+.quick-action{display:inline-flex;justify-content:center;align-items:center;width:32px;height:32px;border-radius:50%;text-decoration:none;font-size:14px;color:#fff;border:none;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.2)}
+.quick-call{background:var(--secondary)}.quick-wa{background:var(--whatsapp);color:#000}.quick-gps{background:#ff9f0a;color:#000}
+.crm-amount{color:var(--success);font-weight:900;font-size:16px;margin:8px 0}.crm-notes{background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;font-size:12px;color:var(--text-muted);margin-bottom:10px;font-weight:600}
+.crm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.action-status-btn{padding:8px;border-radius:8px;font-size:11px;text-align:center;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-weight:700;display:flex;justify-content:center;align-items:center;gap:4px}
+.action-status-btn.active{font-weight:900;color:#000;box-shadow:0 2px 5px rgba(0,0,0,0.2)}
+.action-status-btn.active-waiting{background:var(--warning);border-color:var(--warning)}.action-status-btn.active-activated{background:var(--success);border-color:var(--success)}.action-status-btn.active-rejected{background:var(--danger);border-color:var(--danger);color:#fff}.action-status-btn.active-no-answer{background:#ff9f0a;border-color:#ff9f0a}.action-status-btn.active-not-interested{background:#666;border-color:#666;color:#fff}
+
+.crm-stats{display:flex;justify-content:space-between;padding:15px;border-radius:16px;margin-bottom:15px;text-align:center;background:rgba(52,199,89,0.1);border:1px solid rgba(52,199,89,0.3)}
+.crm-stats div{font-size:12px;color:var(--text-muted);font-weight:700}.crm-stats span{display:block;font-size:20px;font-weight:900;color:var(--success);margin-top:5px}
+
+/* Dasboard */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px}
+.dash-stat{padding:15px;text-align:center}
+.dash-stat .num{font-size:26px;font-weight:900;color:var(--primary);margin:5px 0}
+.dash-stat .lbl{font-size:12px;color:var(--text-muted);font-weight:700}
+.chart-box{padding:15px;margin-bottom:15px}
+.chart-box h4{margin:0 0 15px;font-size:14px;color:var(--text-muted);font-weight:800}
+.streak-box{background:linear-gradient(135deg,#ff9f0a,#ff453a);color:#fff;padding:20px;border-radius:20px;text-align:center;margin-bottom:15px;box-shadow:0 10px 20px rgba(255,69,58,0.2)}
+.streak-box .big{font-size:40px;font-weight:900;margin:5px 0;text-shadow:0 2px 10px rgba(0,0,0,0.3)}
+.badges-row{display:flex;gap:10px;overflow-x:auto;padding:5px 0}
+.badge-item{flex-shrink:0;text-align:center;font-size:11px;color:var(--text-muted);min-width:70px;font-weight:700}
+.badge-item .icon{font-size:30px;display:block;filter:grayscale(1);opacity:.3;margin-bottom:5px;transition:all 0.3s}
+.badge-item.unlocked .icon{filter:none;opacity:1;transform:scale(1.1);text-shadow:0 0 10px rgba(52,199,89,0.5)}
+.badge-item.unlocked{color:var(--primary)}
+.projection-box{background:linear-gradient(135deg,var(--purple),var(--secondary));color:#fff;padding:20px;border-radius:20px;margin-bottom:15px;box-shadow:0 10px 20px rgba(94,92,230,0.2)}
+.projection-box h4{margin:0 0 10px;font-size:15px;font-weight:800}
+.projection-box .line{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.2);font-weight:700}
+
+/* Quick Menu FAB */
+.quick-fab{position:fixed;bottom:100px;left:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--secondary));border:none;color:#fff;font-size:26px;z-index:998;cursor:pointer;box-shadow:0 6px 20px rgba(94,92,230,0.4);display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.quick-fab:active{transform:scale(0.9)}
+.quick-menu{position:fixed;bottom:165px;left:20px;background:var(--card-bg);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;padding:10px;z-index:997;display:flex;flex-direction:column;gap:5px;box-shadow:0 10px 30px rgba(0,0,0,0.3);animation:fadeIn .2s}
+.quick-menu.hidden{display:none}
+.quick-menu button{background:transparent;border:none;padding:12px 15px;border-radius:10px;color:var(--text);text-align:right;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px}
+.quick-menu button:hover{background:rgba(255,255,255,.1)}
+
+/* Toast */
+#toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,30,30,0.9);backdrop-filter:blur(10px);color:#fff;padding:14px 25px;border-radius:30px;font-size:14px;font-weight:800;z-index:9999;opacity:0;transition:all .3s cubic-bezier(0.2, 0.8, 0.2, 1);pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:90%;text-align:center;border:1px solid rgba(255,255,255,0.1)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{background:var(--success);color:#000;border:none}#toast.error{background:var(--danger);color:#fff;border:none}#toast.info{background:var(--secondary);color:#fff;border:none}
+
+/* Tables */
+.table-container{overflow-x:auto;border-radius:12px;border:1px solid var(--border);margin-top:15px;direction:ltr;background:rgba(0,0,0,0.2)}
+.data-table{width:100%;border-collapse:collapse;text-align:center;color:var(--text);direction:ltr;font-size:13px}
+.data-table th{background:rgba(255,255,255,0.1);color:var(--text);padding:14px;font-weight:800;border-bottom:1px solid var(--border)}
+.data-table td{border-bottom:1px solid var(--border);padding:12px;font-weight:600;color:var(--text-muted)}
+.data-table .total-row td{background:rgba(0,0,0,0.1);color:var(--text);font-weight:900;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splashScreen">
+    <div class="splash-logo">🚀</div>
+    <div class="splash-text">Ultimate Sales Hub</div>
+</div>
+
+<div class="container">
+<div class="header">
+<h1 data-i18n="app_title">Ultimate Sales Hub</h1>
+<p data-i18n="app_subtitle">كل أدواتك في مكان واحد</p>
+<div class="header-actions">
+    <button class="header-btn" onclick="toggleLanguage()" title="Change Language">🌐</button>
+    <button class="header-btn" id="themeBtn" onclick="toggleTheme()" title="Theme">🌙</button>
+</div>
+</div>
+
+<div id="tab-dashboard" class="tab-content active">
+<div class="card" style="border:1px solid var(--purple)">
+<h3 style="color:var(--purple)" data-i18n="dash_title">لوحة التحكم 📊</h3>
+<div style="margin-bottom:15px; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px; border:1px dashed var(--primary)">
+<label style="color:var(--primary); font-weight:800; margin-bottom:10px" data-i18n="dash_target_label">🎯 حدد التارجت الشهري هنا (اكتب رقمك):</label>
+<input type="number" id="dashTargetInput" placeholder="..." oninput="saveDashTarget(this.value)" style="margin-bottom:0; border-color:var(--primary); font-size:22px; font-weight:900; text-align:center; color:var(--primary)">
+</div>
+<div class="dash-grid">
+<div class="dash-stat"><div class="lbl" data-i18n="dash_contracts">عقود الشهر</div><div class="num" id="dashMonthContracts">0</div></div>
+<div class="dash-stat"><div class="lbl" data-i18n="dash_limit">ليميت الشهر</div><div class="num" id="dashMonthLimits" style="color:var(--secondary)">0K</div></div>
+<div class="dash-stat"><div class="lbl" data-i18n="dash_followups">متابعات</div><div class="num" id="dashFollowups" style="color:var(--warning)">0</div></div>
+<div class="dash-stat"><div class="lbl" data-i18n="dash_total_crm">إجمالي عملاء</div><div class="num" id="dashTotalCrm">0</div></div>
+</div>
+</div>
+<div class="chart-box">
+<h4 data-i18n="chart_target">🎯 التارجت الشهري</h4>
+<div style="position:relative; width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
+<canvas id="chartTarget"></canvas>
+<div id="chartCenterText" style="position:absolute; text-align:center; font-size:14px; font-weight:bold; line-height:1.5; pointer-events:none;"></div>
+</div>
+</div>
+<div class="chart-box"><h4 data-i18n="chart_status">📊 حالات العملاء</h4><canvas id="chartStatusPie"></canvas></div>
+<div class="chart-box"><h4 data-i18n="chart_week">📈 آخر 7 أيام</h4><canvas id="chartWeek"></canvas></div>
+<div class="projection-box">
+<h4 data-i18n="proj_title">🔮 توقع نهاية الشهر</h4>
+<div class="line"><span data-i18n="proj_rate">معدلك اليومي:</span><span id="projRate">0</span></div>
+<div class="line"><span data-i18n="proj_end">التوقع النهائي:</span><span id="projEnd">0</span></div>
+<div class="line"><span data-i18n="proj_compare">المقارنة بالشهر السابق:</span><span id="projCompare">—</span></div>
+</div>
+<div class="streak-box">
+<div style="font-size:14px;opacity:.9;font-weight:800" data-i18n="streak_title">🔥 Streak</div>
+<div class="big" id="streakNum">0</div>
+<div style="font-size:12px;font-weight:700" data-i18n="streak_desc">يوم متواصل بتحقيق</div>
+</div>
+<div class="card"><h3 data-i18n="badges_title">🏆 الإنجازات</h3><div class="badges-row" id="badgesRow"></div></div>
+</div>
+
+<div id="tab-calc" class="tab-content">
+<div class="card">
+<h3 data-i18n="calc_title">حاسبة العمولة 💰</h3>
+<p style="font-size:13px;color:var(--text-muted);margin-top:-10px;margin-bottom:20px;font-weight:700" data-i18n="calc_desc">اكتب الأرقام اللي إنت عايز تجربها في الخانات دي، وهيا هتحسب لوحدها.</p>
+<div class="row" style="margin-bottom:15px;">
+<div style="flex:1;">
+<label style="text-align:center; font-weight:800" data-i18n="calc_target">التارجت</label>
+<input type="number" id="calcTargetManual" placeholder="80" oninput="calcNewCommission()" style="margin-bottom:0; text-align:center; font-weight:900; color:var(--primary); font-size:20px;">
+</div>
+<div style="flex:1;">
+<label style="text-align:center; font-weight:800" data-i18n="calc_achieved">المنجز</label>
+<input type="number" id="calcAchievedManual" placeholder="64" oninput="calcNewCommission()" style="margin-bottom:0; text-align:center; font-weight:900; color:var(--success); font-size:20px;">
+</div>
+</div>
+<div style="margin-bottom:20px; text-align:center;">
+<button class="btn btn-gray" onclick="syncCalcWithData()" style="width:100%; padding:10px;" data-i18n="calc_sync">🔄 سحب الأرقام الحقيقية تلقائياً</button>
+</div>
+<label data-i18n="calc_limit">الليميت المحقق (جنيه) - اكتبه يدوي</label>
+<input type="tel" inputmode="numeric" id="calcLimit" placeholder="1,350,000" oninput="formatNumberInput(this); calcNewCommission()">
+<div class="calc-result" id="newCalcSaveArea">
+<p style="margin:0 0 10px;font-size:16px;font-weight:800" data-i18n="calc_percent_title">نسبة التارجت: <span id="calcPercent" style="color:var(--secondary);font-size:20px">0%</span></p>
+<div style="background:rgba(0,0,0,0.2);padding:15px;border-radius:12px;margin-bottom:15px;text-align:right;direction:rtl">
+<p style="margin:0 0 8px;font-size:14px;color:var(--text-muted);font-weight:700" data-i18n="calc_rate">سعر العقد: <span id="calcRate" style="color:var(--warning);font-weight:900;font-size:16px">0 ج.م</span></p>
+<p style="margin:0 0 8px;font-size:14px;color:var(--text-muted);font-weight:700" data-i18n="calc_contracts_total">إجمالي العقود: <span id="calcContractsTotal" style="color:var(--warning);font-weight:900;font-size:16px">0 ج.م</span></p>
+<hr style="border-color:var(--border);margin:12px 0">
+<p style="margin:0 0 8px;font-size:14px;color:var(--text-muted);font-weight:700" data-i18n="calc_bonus">البونص (1 مليون = 1600): <span id="calcBonus" style="color:var(--secondary);font-weight:900;font-size:16px">0 ج.م</span></p>
+<p style="margin:0 0 8px;font-size:14px;color:var(--text-muted);font-weight:700" data-i18n="calc_tax">الضريبة المخصومة (11%): <span id="calcTaxAmount" style="color:var(--danger);font-weight:900;font-size:16px">0 ج.م</span></p>
+</div>
+<p style="margin:0 0 8px;font-size:15px;font-weight:700" data-i18n="calc_subtotal">الإجمالي قبل الضريبة: <br><span id="calcSubtotal" style="font-size:20px;font-weight:900;color:var(--text)">0 ج.م</span></p>
+<h3 style="margin:20px 0 0;font-size:18px;color:var(--success);font-weight:900" data-i18n="calc_total">الإجمالي بعد خصم الضريبة: <br><span id="calcTotal" style="font-size:26px;text-shadow:0 0 10px rgba(52,199,89,0.3)">0 ج.م</span></h3>
+</div>
+<div class="save-row"><button class="btn btn-save" onclick="saveSection('newCalcSaveArea','حساب_العمولة','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('newCalcSaveArea','حساب_العمولة','txt')">📝 نوت</button></div>
+</div>
+</div>
+
+<div id="tab-crm" class="tab-content">
+<div class="crm-toolbar"><input type="text" id="crmSearch" placeholder="🔍 ابحث بالاسم أو الرقم..." oninput="renderCrm()"></div>
+<div class="crm-toolbar" style="margin-top:-5px;">
+<button class="btn btn-sm btn-wa" onclick="bulkWhatsApp()" style="flex:1;padding:10px;font-size:13px;" data-i18n="crm_bulk">📲 إرسال واتساب جماعي</button>
+</div>
+<div id="crmSaveArea">
+<div class="crm-stats"><div data-i18n="crm_active">مفعّلين<span id="totalActivatedCount">0</span></div><div data-i18n="crm_amount">إجمالي المبالغ<span id="totalActivatedAmount">0</span></div></div>
+<div id="customerList"></div>
+</div>
+<div class="save-row"><button class="btn btn-save" onclick="saveSection('crmSaveArea','قائمة_العملاء','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('crmSaveArea','قائمة_العملاء','txt')">📝 نوت</button></div>
+<div class="card">
+<h3 data-i18n="crm_add_title">إضافة عميل جديد 👥</h3>
+<input type="text" id="custNameCrm" placeholder="اسم العميل" data-i18n-placeholder="crm_name_ph">
+<input type="tel" id="custPhone" placeholder="رقم التليفون" data-i18n-placeholder="crm_phone_ph">
+<input type="number" id="custLoanAmount" placeholder="مبلغ التمويل المطلوب" data-i18n-placeholder="crm_amount_ph">
+<label style="margin-top:-5px" data-i18n="crm_followup">تاريخ المتابعة (اختياري)</label>
+<input type="date" id="custFollowup">
+<label data-i18n="crm_tags">التاجات (اختياري)</label>
+<select id="custTags" multiple style="min-height:70px"><option value="VIP">⭐ VIP</option><option value="Hot">🔥 Hot</option><option value="New">🆕 New</option><option value="صعب">😤 صعب</option><option value="سهل">😊 سهل</option></select>
+<textarea id="custNotes" placeholder="ملاحظات" data-i18n-placeholder="crm_notes_ph" rows="2"></textarea>
+<button class="btn" onclick="addCustomerCrm()" data-i18n="crm_add_btn">+ إضافة عميل</button>
+</div>
+<div class="card">
+<h3 data-i18n="crm_docs_title">تشك ليست الورق 📄</h3>
+<button class="btn btn-wa" onclick="shareDocsWhatsApp()" data-i18n="crm_docs_btn">📲 إرسال رسالة طلب الورق (واتساب)</button>
+<div id="docsList" style="margin-top:15px"></div>
+</div>
+</div>
+
+<div id="tab-dailyreport" class="tab-content">
+<div class="card" style="display:flex;justify-content:space-between;align-items:center">
+<div style="font-weight:900;color:var(--primary);font-size:16px">WAGEH │ Menoufia</div>
+<div style="display:flex;gap:5px">
+<button class="btn-sm btn-danger" style="border-radius:8px" onclick="manualResetMonth()" data-i18n="rep_reset">تصفير</button>
+<button class="btn-sm" style="background:transparent;color:var(--primary);border:1px solid var(--primary);border-radius:8px" onclick="toggleSettings()">⚙️</button>
+</div>
+</div>
+<div class="settings-area" id="settingsArea">
+<h4 data-i18n="rep_start_month">بداية الشهر (يفضل تركها 0)</h4>
+<div class="row"><input type="number" id="startCount" placeholder="عدد العقود القديمة" data-i18n-placeholder="rep_old_contracts" oninput="saveSettings()" style="margin-bottom:0"><input type="number" id="startLimit" placeholder="توتال الليميت (K)" data-i18n-placeholder="rep_old_limit" oninput="saveSettings()" style="margin-bottom:0"></div>
+</div>
+<div class="row">
+<input type="date" id="reportDate" style="margin-bottom:0" onchange="onReportDateChange()">
+<button class="btn" style="width:auto;padding:0 15px;margin-bottom:0;background:#333;color:#fff" onclick="copyReport()" data-i18n="rep_copy">Copy</button>
+</div>
+<div class="grid" style="margin-top:15px">
+<div class="card" style="margin-bottom:0;padding:12px"><div class="stat-title" data-i18n="rep_activated">Activated (Today)</div><div class="stat-value" id="dailyCount">00</div></div>
+<div class="card" style="margin-bottom:0;padding:12px"><div class="stat-title" data-i18n="rep_limits">Limits (Today)</div><div class="stat-value" id="dailyLimits">0K</div></div>
+<div class="card" style="margin-bottom:0;padding:12px"><div class="stat-title" data-i18n="rep_total">Total Monthly</div><div class="stat-value highlight" id="monthlyCount">00</div><div id="monthlyCountBreakdown" style="font-size:10px;color:#888;margin-top:2px;direction:ltr"></div></div>
+<div class="card" style="margin-bottom:0;padding:12px"><div class="stat-title" data-i18n="rep_limit_m">Monthly Limit</div><div class="stat-value highlight" id="monthlyLimits">0K</div></div>
+</div>
+<div class="card">
+<button class="btn btn-wa" onclick="smartPasteNameCode()" style="margin-bottom: 15px; background:linear-gradient(135deg, var(--purple), #3634a3); color:#fff;" data-i18n="rep_paste">📋 لصق الاسم والكود من واتساب</button>
+<input type="text" id="custName" placeholder="Client name" data-i18n-placeholder="rep_cust_name">
+<div class="row"><input type="text" id="custID" placeholder="Account No / Code" data-i18n-placeholder="rep_cust_code"><input type="number" id="custLimit" placeholder="Limit (K)" data-i18n-placeholder="rep_cust_limit"></div>
+<div class="row"><input type="text" id="custNID" placeholder="NID" data-i18n-placeholder="rep_cust_nid"><input type="text" id="custLocation" placeholder="Location" value="Menoufia" data-i18n-placeholder="rep_cust_loc"></div>
+<button class="btn" onclick="addCustomer()" data-i18n="rep_add_btn">+ Add Customer</button>
+</div>
+<div class="card">
+<h3 style="margin-bottom:15px;font-size:14px;color:var(--text-muted);font-weight:800" data-i18n="rep_appr_rej">Approved & Rejected (Manual)</h3>
+<div class="row"><input type="number" id="appCount" placeholder="Appr. Count" data-i18n-placeholder="rep_appr_c" oninput="saveReportInputs();updateUI()"><input type="number" id="appLimit" placeholder="Appr. Limit (K)" data-i18n-placeholder="rep_appr_l" oninput="saveReportInputs();updateUI()"></div>
+<input type="number" id="rejCount" placeholder="Rejected Count" data-i18n-placeholder="rep_rej_c" oninput="saveReportInputs();updateUI()">
+</div>
+<div class="report-box" id="reportText"></div>
+<div class="save-row" style="margin-top:15px"><button class="btn btn-save" onclick="saveSection('reportText','التقرير_اليومي','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('reportText','التقرير_اليومي','txt')">📝 نوت</button></div>
+<button class="btn btn-wa" onclick="shareWhatsApp()" style="margin-top:5px" data-i18n="rep_share_wa">Share WhatsApp</button>
+<div class="daily-log-section">
+<h3><span data-i18n="rep_delta_title">📊 Delta Sales Sheet</span><span id="logCount" style="font-size:12px;color:var(--text-muted);font-weight:700">0 يوم</span></h3>
+<p class="log-agent-line">Agent: Mohamed Wageh — Auto-saved daily</p>
+<div id="dailyLogSaveArea"><div id="dailyLogList"></div></div>
+<button class="btn btn-excel" onclick="exportMonthToExcel()" style="margin-top:15px;font-size:15px;padding:15px" data-i18n="rep_excel_btn">📥 تحميل شيت الإكسيل (الشهر كامل)</button>
+<div class="save-row" style="margin-top:10px"><button class="btn btn-save" onclick="saveSection('dailyLogSaveArea','السجل_اليومي','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('dailyLogSaveArea','السجل_اليومي','txt')">📝 نوت</button></div>
+<button class="btn btn-wa" style="margin-top:5px" onclick="shareDailyLogWA()" data-i18n="rep_share_log">📲 إرسال السجل (واتساب)</button>
+</div>
+</div>
+
+<div id="tab-contracts" class="tab-content">
+<div class="card" style="border:1px solid var(--purple)">
+<h3 style="color:var(--purple)" data-i18n="con_email_title">إنشاء إيميل (Outlook) 📧</h3>
+<label data-i18n="con_date">تاريخ التسليم</label><input type="date" id="emailDate" onchange="updateEmailPreview()">
+<div class="email-composer" id="contractsEmailSaveArea">
+<div class="email-composer-header"><span data-i18n="con_email_draft">📧 مسودة الإيميل</span></div>
+<div class="email-composer-field"><span>Subject:</span><br><strong id="previewSubject">...</strong></div>
+<div class="email-composer-body" id="previewBody">Dears,...</div>
+</div>
+<div class="save-row"><button class="btn btn-save" onclick="saveSection('contractsEmailSaveArea','مسودة_الايميل','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('contractsEmailSaveArea','مسودة_الايميل','txt')">📝 نوت</button></div>
+<button class="btn btn-email" onclick="shareToOutlookWithFiles()" style="margin-top:5px" data-i18n="con_email_share">📤 مشاركة الإيميل وإرسال</button>
+<button class="btn btn-gray" onclick="copyEmailText()" style="margin-top:5px;font-size:12px" data-i18n="con_email_copy">📋 نسخ الإيميل</button>
+</div>
+<div class="card">
+<h3 data-i18n="con_log_title">سجل تسليمات العقود 📄</h3>
+<div id="contractsSaveArea"><div id="contractsList"></div><div id="contractsTotalBox" style="text-align:center;margin-top:15px;padding:15px;background:rgba(0,0,0,0.2);border-radius:12px;font-weight:900;border:1px dashed var(--purple)"></div></div>
+<div class="save-row" style="margin-top:10px"><button class="btn btn-save" onclick="saveSection('contractsSaveArea','سجل_العقود','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('contractsSaveArea','سجل_العقود','txt')">📝 نوت</button></div>
+<button class="btn btn-wa" style="margin-top:5px" onclick="shareContractsWA()" data-i18n="con_log_share">📲 إرسال السجل (واتساب)</button>
+</div>
+<div class="card" style="border:1px solid var(--warning)">
+<h3 style="color:var(--warning)" data-i18n="con_add_title">إضافة تسليمة جديدة 📄</h3>
+<div class="row"><div style="flex:1"><label data-i18n="con_count">عدد العقود</label><input type="number" id="contractCount" placeholder="3" data-i18n-placeholder="con_count"></div><div style="flex:1"><label data-i18n="con_date">تاريخ التسليم</label><input type="date" id="contractDate"></div></div>
+<label data-i18n="con_waybill">رقم البوليصة</label><input type="text" id="contractWaybill" placeholder="رقم الأرسالية" data-i18n-placeholder="con_waybill">
+<label data-i18n="con_receiver">جهة الاستلام</label><input type="text" id="contractReceiver" placeholder="أرامكس" data-i18n-placeholder="con_receiver">
+<label data-i18n="con_status">الحالة</label>
+<select id="contractStatus"><option value="in-transit" data-i18n="con_st_trans">🚚 في الطريق</option><option value="delivered" data-i18n="con_st_deliv">✅ تم التسليم</option><option value="returned" data-i18n="con_st_ret">↩️ مرتجع</option></select>
+<label data-i18n="con_note">ملاحظة</label><input type="text" id="contractNote" placeholder="اختياري" data-i18n-placeholder="con_note">
+<button class="btn" onclick="addContract()" style="background:var(--warning);color:#000" data-i18n="con_add_btn">+ تسجيل وحفظ التسليمة</button>
+</div>
+</div>
+
+<div id="tab-team" class="tab-content">
+<div class="card">
+<h3>WEEKLY OFF SCHEDULE 📅</h3>
+<div id="scheduleTableContainer" class="table-container">
+<table class="data-table"><thead><tr><th colspan="3" class="table-title-top">WEEKLY OFF SCHEDULE</th></tr><tr><th colspan="3" class="table-subtitle">Team Day Off Allocations</th></tr><tr><th>Employee Name</th><th>Day Off</th><th style="width:40px" class="no-print">✖</th></tr></thead><tbody id="teamTableBody"></tbody><tfoot><tr class="total-row"><td colspan="2" style="text-align:right;padding-right:20px">Total Team Members</td><td id="totalTeamCount">0</td></tr></tfoot></table>
+</div>
+<div class="save-row" style="margin-top:15px"><button class="btn btn-save" onclick="saveSection('scheduleTableContainer','جدول_الفريق','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('scheduleTableContainer','جدول_الفريق','txt')">📝 نوت</button></div>
+<button class="btn btn-wa" style="margin-top:5px" onclick="shareScheduleAsImage()">📲 إرسال الجدول</button>
+</div>
+<div class="card">
+<h3>إضافة عضو للفريق 👥</h3>
+<input type="text" id="teamName" placeholder="اسم المندوب">
+<label>يوم الإجازة</label>
+<select id="teamOffDay"><option value="Saturday">السبت</option><option value="Sunday">الأحد</option><option value="Monday">الإثنين</option><option value="Tuesday">الثلاثاء</option><option value="Wednesday">الأربعاء</option><option value="Thursday">الخميس</option><option value="Friday">الجمعة</option><option value="None">لا يوجد</option></select>
+<button class="btn" onclick="addTeamMember()">+ إضافة للفريق</button>
+</div>
+<div class="card">
+<h3>تقرير السيلز اليومي 📊</h3>
+<div id="salesReportTableContainer" class="table-container" style="margin-top:10px">
+<table class="data-table excel-table"><thead><tr><th colspan="4" class="table-title-top">DAILY SALES REPORT</th></tr><tr><th colspan="4" class="table-subtitle">Daily Sales Summary</th></tr><tr><th>Sales Name</th><th>Clients</th><th>Limit (K)</th><th style="width:40px" class="no-print">✖</th></tr></thead><tbody id="dailyReportBody"></tbody><tfoot><tr class="total-row"><td style="text-align:right;padding-right:10px">Total</td><td id="totalClientsCount">0</td><td id="totalLimitAmount">0</td><td class="no-print"></td></tr></tfoot></table>
+</div>
+<div class="save-row" style="margin-top:10px"><button class="btn btn-save" onclick="saveSection('salesReportTableContainer','تقرير_السيلز','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('salesReportTableContainer','تقرير_السيلز','txt')">📝 نوت</button></div>
+<button class="btn btn-excel" onclick="shareSalesReportExcel()" style="margin-top:5px">📊 تصدير كإكسيل</button>
+</div>
+<div class="card">
+<h3>إضافة تقرير سيلز 📊</h3>
+<input type="text" id="reportName" placeholder="اسم السيلز">
+<div class="row"><input type="number" id="reportClients" placeholder="عدد العملاء"><input type="number" id="reportLimit" placeholder="الليميت (K)"></div>
+<button class="btn" onclick="addReport()">+ إضافة للتقرير</button>
+</div>
+</div>
+
+<div id="tab-office" class="tab-content">
+<div class="card">
+<h3>مستند وورد (Word) 📝</h3>
+<div class="row"><label class="file-upload-box" style="border-color:var(--secondary);flex:1"><input type="file" id="wordFileInput" accept=".docx,.txt"><p style="color:var(--secondary)">📂 استيراد</p></label><button class="btn btn-gray" onclick="downloadWord()" style="flex:1;margin-bottom:0">📥 حفظ كـ Word</button></div>
+<div class="editor-toolbar"><button onclick="document.execCommand('bold',false,null)"><b>B</b></button><button onclick="document.execCommand('italic',false,null)"><i>I</i></button><button onclick="document.execCommand('underline',false,null)"><u>U</u></button></div>
+<div id="wordEditor" contenteditable="true" class="doc-editor" placeholder="اكتب هنا..."></div>
+<div class="save-row" style="margin-top:10px"><button class="btn btn-save" onclick="saveSection('wordEditor','مستند_وورد','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('wordEditor','مستند_وورد','txt')">📝 نوت</button></div>
+</div>
+<div class="card">
+<h3>جدول بيانات (Excel) 📊</h3>
+<div class="row"><label class="file-upload-box" style="border-color:var(--excel-green);flex:1"><input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv"><p style="color:var(--excel-green)">📂 استيراد</p></label><button class="btn btn-excel" onclick="downloadExcel()" style="flex:1;margin-bottom:0">📥 حفظ كـ Excel</button></div>
+<div id="excelEditorContainer" class="excel-container"></div>
+<div class="row" style="margin-top:10px"><button class="btn btn-gray btn-sm" onclick="addExcelRow()">+ صف</button><button class="btn btn-gray btn-sm" onclick="addExcelCol()">+ عمود</button></div>
+<div class="save-row" style="margin-top:10px"><button class="btn btn-save" onclick="saveSection('excelEditorContainer','جدول_اكسيل','img')">📸 صورة</button><button class="btn btn-note" onclick="saveSection('excelEditorContainer','جدول_اكسيل','txt')">📝 نوت</button></div>
+</div>
+</div>
+
+<div id="tab-archive" class="tab-content">
+<div class="card" style="border:1px solid var(--secondary)">
+<h3 style="color:var(--secondary)">📸 الأرشيف الذكي</h3>
+<div class="row" style="margin-bottom:15px"><button class="btn btn-sm btn-excel" onclick="exportBackup()" style="flex:1;padding:10px;margin-bottom:0">📤 نسخة احتياطية</button><label class="btn btn-sm btn-save" style="flex:1;padding:10px;margin-bottom:0;cursor:pointer">📥 استعادة<input type="file" id="importBackupInput" accept=".json" onchange="importBackup(event)" style="display:none"></label></div>
+<div class="row" style="margin-top:10px"><input type="text" id="archiveSearchInput" placeholder="🔍 ابحث بالاسم أو التاريخ..." oninput="loadArchive()" style="margin-bottom:0"></div>
+<div class="row">
+<select id="archiveFilterSelect" onchange="loadArchive()" style="margin-bottom:0"><option value="all">📁 كل المجلدات</option><option value="حساب_العمولة">💰 الحاسبة</option><option value="قائمة_العملاء">👥 العملاء</option><option value="التقرير_اليومي">📑 الريبورت</option><option value="السجل_اليومي">📊 السجل اليومي</option><option value="سجل_العقود">📄 العقود</option><option value="مسودة_الايميل">📧 الإيميلات</option><option value="جدول_الفريق">📊 الفريق</option><option value="تقرير_السيلز">📈 تقرير السيلز</option><option value="مستند_وورد">📝 الأوفيس</option><option value="__TRASH__">🗑️ سلة المحذوفات</option></select>
+<select id="autoDeleteSelect" onchange="saveAutoDeleteSetting()" style="margin-bottom:0;color:var(--warning)"><option value="0">🚫 بدون حذف</option><option value="7">🗑️ بعد 7 أيام</option><option value="30">🗑️ بعد 30 يوم</option><option value="90">🗑️ بعد 3 شهور</option></select>
+</div>
+<button class="btn" onclick="loadArchive()" style="background:var(--secondary);color:#fff;margin-top:10px">🔄 تحديث</button>
+<div id="archiveList" style="margin-top:15px"></div>
+</div>
+</div>
+
+<div id="tab-emails" class="tab-content">
+<div class="card">
+<h3>صيغ إيميلات جاهزة 📧</h3>
+<label>اسمك</label><input type="text" id="senderName" placeholder="Mohamed Wageh" oninput="refreshEmailTemplate()">
+<label>نوع الإيميل</label>
+<select id="emailTemplateType" onchange="loadEmailTemplate()"><option value="leave_request">طلب إجازة</option><option value="transfer_request">طلب نقل</option><option value="cash_advance">طلب سلفة</option><option value="resignation">استقالة</option><option value="follow_up">متابعة طلب</option><option value="work_report">تقرير عمل</option></select>
+<label>اللغة</label>
+<select id="emailLang" onchange="loadEmailTemplate()"><option value="ar">عربي</option><option value="en">English</option></select>
+<div id="contextFields" style="display:none">
+<div id="leaveTypeField" style="display:none;background:rgba(0,0,0,0.2);padding:15px;border-radius:12px;margin-bottom:15px;border:1px dashed var(--primary)">
+<label style="color:var(--primary);font-weight:900;margin-bottom:10px">📋 تفاصيل الإجازة</label>
+<select id="leaveTypeSelect" onchange="refreshEmailTemplate()"><option value="Leave">إجازة</option><option value="Annual">سنوية</option><option value="Sick">مرضية</option></select>
+<div class="row" style="margin-top:5px"><div style="flex:1"><label>من</label><input type="date" id="leaveFromDate" onchange="refreshEmailTemplate()" style="margin-bottom:0"></div><div style="flex:1"><label>إلى</label><input type="date" id="leaveToDate" onchange="refreshEmailTemplate()" style="margin-bottom:0"></div></div>
+</div>
+</div>
+<label>إيميل المستلم (اختياري)</label><input type="email" id="emailTo" placeholder="example@domain.com">
+<label>الموضوع</label><input type="text" id="emailSubject" placeholder="Subject...">
+<label>المحتوى</label><textarea id="emailBody" rows="6" placeholder="Email content..."></textarea>
+<button class="btn btn-email" onclick="sendPreparedEmail()">✉️ إرسال الإيميل</button>
+</div>
+</div>
+
+<div class="bottom-nav" id="mainNav">
+<div class="nav-item active" onclick="switchTab('tab-dashboard',this)"><span>🏠</span><span data-i18n="nav_home">رئيسية</span></div>
+<div class="nav-item" onclick="switchTab('tab-calc',this)"><span>🧮</span><span data-i18n="nav_calc">حاسبة</span></div>
+<div class="nav-item" onclick="switchTab('tab-crm',this)"><span>👥</span><span data-i18n="nav_crm">عملاء</span><span class="nav-badge" id="crmBadge" style="display:none">0</span></div>
+<div class="nav-item" onclick="switchTab('tab-dailyreport',this)"><span>📑</span><span data-i18n="nav_report">ريبورت</span></div>
+<div class="nav-item" onclick="switchTab('tab-contracts',this)"><span>📄</span><span data-i18n="nav_contracts">عقود</span></div>
+<div class="nav-item" onclick="switchTab('tab-team',this)"><span>📊</span><span data-i18n="nav_team">فريق</span></div>
+<div class="nav-item" onclick="switchTab('tab-office',this)"><span>📝</span><span data-i18n="nav_office">أوفيس</span></div>
+<div class="nav-item" onclick="switchTab('tab-archive',this)"><span>📸</span><span data-i18n="nav_archive">أرشيف</span></div>
+<div class="nav-item" onclick="switchTab('tab-emails',this)"><span>📧</span><span data-i18n="nav_emails">إيميلات</span></div>
+</div>
+
+<button class="quick-fab" id="quickFab" onclick="toggleQuickMenu()">⚡</button>
+<div class="quick-menu hidden" id="quickMenu">
+<button onclick="toggleQuickMenu(); switchTab('tab-dailyreport', document.querySelector('.nav-item:nth-child(4)'));"><span>📝</span> <span data-i18n="fab_add">إضافة عميل سريع</span></button>
+<button onclick="toggleQuickMenu(); switchTab('tab-crm', document.querySelector('.nav-item:nth-child(3)'));"><span>👀</span> <span data-i18n="fab_follow">مين محتاج متابعة؟</span></button>
+<button onclick="toggleQuickMenu(); switchTab('tab-calc', document.querySelector('.nav-item:nth-child(2)'));"><span>🧮</span> <span data-i18n="fab_calc">حاسبة سريعة</span></button>
+</div>
+<script>
+// Splash Screen Logic
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('splashScreen').classList.add('hide');
+    }, 2500); // 2.5 seconds splash screen
+});
+
+// Translation System
+const translations = {
+    ar: {
+        app_title: "Ultimate Sales Hub", app_subtitle: "كل أدواتك في مكان واحد",
+        nav_home: "رئيسية", nav_calc: "حاسبة", nav_crm: "عملاء", nav_report: "ريبورت", nav_contracts: "عقود", nav_team: "فريق", nav_office: "أوفيس", nav_archive: "أرشيف", nav_emails: "إيميلات",
+        dash_title: "لوحة التحكم 📊", dash_target_label: "🎯 حدد التارجت الشهري هنا (اكتب رقمك):", dash_contracts: "عقود الشهر", dash_limit: "ليميت الشهر", dash_followups: "متابعات", dash_total_crm: "إجمالي عملاء",
+        chart_target: "🎯 التارجت الشهري", chart_status: "📊 حالات العملاء", chart_week: "📈 آخر 7 أيام",
+        proj_title: "🔮 توقع نهاية الشهر", proj_rate: "معدلك اليومي:", proj_end: "التوقع النهائي:", proj_compare: "المقارنة بالشهر السابق:",
+        streak_title: "🔥 Streak", streak_desc: "يوم متواصل بتحقيق", badges_title: "🏆 الإنجازات",
+        calc_title: "حاسبة العمولة 💰", calc_desc: "اكتب الأرقام اللي إنت عايز تجربها في الخانات دي، وهيا هتحسب لوحدها.", calc_target: "التارجت", calc_achieved: "المنجز", calc_sync: "🔄 سحب الأرقام الحقيقية تلقائياً", calc_limit: "الليميت المحقق (جنيه) - اكتبه يدوي",
+        calc_percent_title: "نسبة التارجت:", calc_rate: "سعر العقد:", calc_contracts_total: "إجمالي العقود:", calc_bonus: "البونص (1 مليون = 1600):", calc_tax: "الضريبة المخصومة (11%):", calc_subtotal: "الإجمالي قبل الضريبة:", calc_total: "الإجمالي بعد خصم الضريبة:",
+        crm_bulk: "📲 إرسال واتساب جماعي", crm_active: "مفعّلين", crm_amount: "إجمالي المبالغ", crm_add_title: "إضافة عميل جديد 👥", crm_name_ph: "اسم العميل", crm_phone_ph: "رقم التليفون", crm_amount_ph: "مبلغ التمويل المطلوب", crm_followup: "تاريخ المتابعة (اختياري)", crm_tags: "التاجات (اختياري)", crm_notes_ph: "ملاحظات", crm_add_btn: "+ إضافة عميل", crm_docs_title: "تشك ليست الورق 📄", crm_docs_btn: "📲 إرسال رسالة طلب الورق (واتساب)",
+        rep_reset: "تصفير", rep_start_month: "بداية الشهر (يفضل تركها 0)", rep_old_contracts: "عدد العقود القديمة", rep_old_limit: "توتال الليميت (K)", rep_copy: "Copy", rep_activated: "Activated (Today)", rep_limits: "Limits (Today)", rep_total: "Total Monthly", rep_limit_m: "Monthly Limit",
+        rep_paste: "📋 لصق الاسم والكود من واتساب", rep_cust_name: "Client name", rep_cust_code: "Account No / Code", rep_cust_limit: "Limit (K)", rep_cust_nid: "NID", rep_cust_loc: "Location", rep_add_btn: "+ Add Customer", rep_appr_rej: "Approved & Rejected (Manual)", rep_appr_c: "Appr. Count", rep_appr_l: "Appr. Limit (K)", rep_rej_c: "Rejected Count", rep_share_wa: "Share WhatsApp", rep_delta_title: "📊 Delta Sales Sheet", rep_excel_btn: "📥 تحميل شيت الإكسيل (الشهر كامل)", rep_share_log: "📲 إرسال السجل (واتساب)",
+        con_email_title: "إنشاء إيميل (Outlook) 📧", con_date: "تاريخ التسليم", con_email_draft: "📧 مسودة الإيميل", con_email_share: "📤 مشاركة الإيميل وإرسال", con_email_copy: "📋 نسخ الإيميل", con_log_title: "سجل تسليمات العقود 📄", con_log_share: "📲 إرسال السجل (واتساب)", con_add_title: "إضافة تسليمة جديدة 📄", con_count: "عدد العقود", con_waybill: "رقم البوليصة", con_receiver: "جهة الاستلام", con_status: "الحالة", con_st_trans: "🚚 في الطريق", con_st_deliv: "✅ تم التسليم", con_st_ret: "↩️ مرتجع", con_note: "ملاحظة", con_add_btn: "+ تسجيل وحفظ التسليمة",
+        fab_add: "إضافة عميل سريع", fab_follow: "مين محتاج متابعة؟", fab_calc: "حاسبة سريعة"
+    },
+    en: {
+        app_title: "Ultimate Sales Hub", app_subtitle: "All your tools in one place",
+        nav_home: "Home", nav_calc: "Calc", nav_crm: "CRM", nav_report: "Report", nav_contracts: "Contracts", nav_team: "Team", nav_office: "Office", nav_archive: "Archive", nav_emails: "Emails",
+        dash_title: "Dashboard 📊", dash_target_label: "🎯 Set Monthly Target:", dash_contracts: "Month Contracts", dash_limit: "Month Limit", dash_followups: "Follow-ups", dash_total_crm: "Total CRM",
+        chart_target: "🎯 Monthly Target", chart_status: "📊 Customer Status", chart_week: "📈 Last 7 Days",
+        proj_title: "🔮 End of Month Projection", proj_rate: "Daily Rate:", proj_end: "Projected End:", proj_compare: "Compare to Last Month:",
+        streak_title: "🔥 Streak", streak_desc: "Days in a row", badges_title: "🏆 Achievements",
+        calc_title: "Commission Calculator 💰", calc_desc: "Type numbers to simulate your commission.", calc_target: "Target", calc_achieved: "Achieved", calc_sync: "🔄 Auto-fill Real Data", calc_limit: "Real Limit (EGP)",
+        calc_percent_title: "Target Percent:", calc_rate: "Contract Rate:", calc_contracts_total: "Total Contracts:", calc_bonus: "Bonus (1M = 1600):", calc_tax: "Deducted Tax (11%):", calc_subtotal: "Subtotal:", calc_total: "Total after Tax:",
+        crm_bulk: "📲 Bulk WhatsApp", crm_active: "Activated", crm_amount: "Total Amount", crm_add_title: "Add New Customer 👥", crm_name_ph: "Customer Name", crm_phone_ph: "Phone", crm_amount_ph: "Loan Amount", crm_followup: "Follow-up Date (Optional)", crm_tags: "Tags (Optional)", crm_notes_ph: "Notes", crm_add_btn: "+ Add Customer", crm_docs_title: "Docs Checklist 📄", crm_docs_btn: "📲 Send Docs Request (WA)",
+        rep_reset: "Reset", rep_start_month: "Month Start Base", rep_old_contracts: "Old Contracts", rep_old_limit: "Old Limit (K)", rep_copy: "Copy", rep_activated: "Activated (Today)", rep_limits: "Limits (Today)", rep_total: "Total Monthly", rep_limit_m: "Monthly Limit",
+        rep_paste: "📋 Paste Name & Code from WA", rep_cust_name: "Client name", rep_cust_code: "Account No / Code", rep_cust_limit: "Limit (K)", rep_cust_nid: "NID", rep_cust_loc: "Location", rep_add_btn: "+ Add Customer", rep_appr_rej: "Approved & Rejected (Manual)", rep_appr_c: "Appr. Count", rep_appr_l: "Appr. Limit (K)", rep_rej_c: "Rejected Count", rep_share_wa: "Share WhatsApp", rep_delta_title: "📊 Delta Sales Sheet", rep_excel_btn: "📥 Download Excel Sheet", rep_share_log: "📲 Share Log (WA)",
+        con_email_title: "Create Email (Outlook) 📧", con_date: "Delivery Date", con_email_draft: "📧 Email Draft", con_email_share: "📤 Share & Send Email", con_email_copy: "📋 Copy Email", con_log_title: "Contracts Log 📄", con_log_share: "📲 Share Log (WA)", con_add_title: "Add New Delivery 📄", con_count: "Contracts Count", con_waybill: "Waybill No", con_receiver: "Receiver", con_status: "Status", con_st_trans: "🚚 In Transit", con_st_deliv: "✅ Delivered", con_st_ret: "↩️ Returned", con_note: "Note", con_add_btn: "+ Save Delivery",
+        fab_add: "Quick Add", fab_follow: "Follow-ups?", fab_calc: "Quick Calc"
+    }
+};
+
+let currentLang = localStorage.getItem('app_lang') || 'ar';
+
+function toggleLanguage() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('app_lang', currentLang);
+    applyLanguage();
+}
+
+function applyLanguage() {
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+            el.innerHTML = translations[currentLang][key];
+        }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[currentLang][key]) {
+            el.placeholder = translations[currentLang][key];
+        }
+    });
+    // Update charts to reflect language changes if needed
+    if(typeof drawAllCharts === 'function') drawAllCharts();
+}
+
+// Core Functions
+function showToast(msg,type){type=type||'info';let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.textContent=msg;t.className='toast '+type;void t.offsetWidth;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show');},2800);}
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function copyToClipboard(text){if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(text).then(function(){return true;}).catch(function(){return legacyCopy(text);});}return Promise.resolve(legacyCopy(text));}
+function legacyCopy(text){try{let ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.top='-9999px';document.body.appendChild(ta);ta.select();let ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+function formatPhone(phone){let p=(phone||'').toString().replace(/[^0-9]/g,'');if(p.startsWith('00'))p=p.substring(2);if(p.startsWith('0'))p='20'+p.substring(1);return p;}
+function openWhatsApp(phone,text){let clean=formatPhone(phone);let enc=encodeURIComponent(text||'');let url=clean?('https://wa.me/'+clean+'?text='+enc):('https://wa.me/?text='+enc);let a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);showToast('فتح واتساب...','success');}
+function downloadFile(content,filename,mimeType){try{let blob=(content instanceof Blob)?content:new Blob([content],{type:mimeType||'text/plain;charset=utf-8;'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},2000);return true;}catch(e){return false;}}
+function shareFiles(files,title,text){if(files&&files.length&&navigator.canShare&&navigator.canShare({files:files})){return navigator.share({files:files,title:title,text:text}).then(function(){showToast('تم فتح المشاركة','success');return 'shared';}).catch(function(err){if(err&&err.name==='AbortError')return 'cancelled';openWhatsApp('',text);});}else{openWhatsApp('',text);return Promise.resolve('whatsapp');}}
+
+function toggleTheme(){document.body.classList.toggle('light');const isLight=document.body.classList.contains('light');localStorage.setItem('theme',isLight?'light':'dark');const btn=document.getElementById('themeBtn');if(btn)btn.textContent=isLight?'☀️':'🌙';setTimeout(drawAllCharts,100);}
+function loadTheme(){if(localStorage.getItem('theme')==='light'){document.body.classList.add('light');const btn=document.getElementById('themeBtn');if(btn)btn.textContent='☀️';}}
+
+function switchTab(tabId,element){document.querySelectorAll('.tab-content').forEach(function(tab){tab.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(nav){nav.classList.remove('active');});document.getElementById(tabId).classList.add('active');element.classList.add('active');if(tabId==='tab-archive')loadArchive();if(tabId==='tab-dailyreport')updateUI();if(tabId==='tab-dashboard')renderDashboard();if(tabId==='tab-crm')renderCrm();}
+function toggleQuickMenu(){document.getElementById('quickMenu').classList.toggle('hidden');}
+
+// ARCHIVE
+function saveAutoDeleteSetting(){let val=document.getElementById('autoDeleteSelect').value;localStorage.setItem('archiveAutoDelete',val);}
+async function runAutoCleanup(){let days=parseInt(localStorage.getItem('archiveAutoDelete'))||0;if(days===0)return;let cutoff=Date.now()-(days*24*60*60*1000);try{let keys=await localforage.keys();for(let key of keys){if(key.startsWith('TRASH_')){let item=await localforage.getItem(key);if(item&&item.deletedAt&&item.deletedAt<cutoff)await localforage.removeItem(key);continue;}let parts=key.split('_');let ts=parseInt(parts[parts.length-2]);if(ts&&ts<cutoff)await localforage.removeItem(key);}}catch(e){}}
+async function saveSection(elementId,prefixName,format){if(format==='img')return saveSectionAsImage(elementId,prefixName);if(format==='txt')return saveSectionAsText(elementId,prefixName);}
+async function saveSectionAsImage(elementId,prefixName){let el=document.getElementById(elementId);if(!el)return;showToast('جاري تجهيز الصورة...','info');let origOverflow=el.style.overflow;let origHeight=el.style.height;let origWidth=el.style.width;let origMaxWidth=el.style.maxWidth;el.style.overflow='visible';el.style.height='auto';el.style.width='max-content';el.style.maxWidth='none';let scrollables=el.querySelectorAll('.excel-log-wrapper, .table-container');let origScrollStyles=[];scrollables.forEach(item=>{origScrollStyles.push({el:item,width:item.style.width,maxWidth:item.style.maxWidth,overflow:item.style.overflow});item.style.width='max-content';item.style.maxWidth='none';item.style.overflow='visible';});try{let canvas=await html2canvas(el,{backgroundColor:document.body.classList.contains('light')?'#ffffff':'#1c1c1e',scale:2,useCORS:true});el.style.overflow=origOverflow;el.style.height=origHeight;el.style.width=origWidth;el.style.maxWidth=origMaxWidth;scrollables.forEach((item,i)=>{item.style.width=origScrollStyles[i].width;item.style.maxWidth=origScrollStyles[i].maxWidth;item.style.overflow=origScrollStyles[i].overflow;});canvas.toBlob(async function(blob){let d=new Date();let dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');let timeStr=String(d.getHours()).padStart(2,'0')+'-'+String(d.getMinutes()).padStart(2,'0');let timestamp=Date.now();let fileName=prefixName+'_'+dateStr+'_'+timeStr+'.png';let keyName=prefixName+'_'+timestamp+'_img';let file=new File([blob],fileName,{type:'image/png'});await localforage.setItem(keyName,file);showToast('تم الحفظ في الأرشيف (صورة) ✅','success');},'image/png');}catch(err){el.style.overflow=origOverflow;el.style.height=origHeight;el.style.width=origWidth;el.style.maxWidth=origMaxWidth;scrollables.forEach((item,i)=>{item.style.width=origScrollStyles[i].width;item.style.maxWidth=origScrollStyles[i].maxWidth;item.style.overflow=origScrollStyles[i].overflow;});showToast('فشل حفظ الصورة','error');}}
+async function saveSectionAsText(elementId,prefixName){let el=document.getElementById(elementId);if(!el)return;let text=el.innerText||el.textContent;if(!text.trim()){showToast('لا يوجد نص للحفظ','error');return;}try{let timestamp=Date.now();let d=new Date(timestamp);let dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');let timeStr=String(d.getHours()).padStart(2,'0')+'-'+String(d.getMinutes()).padStart(2,'0');let fileName=prefixName+'_'+dateStr+'_'+timeStr+'.txt';let keyName=prefixName+'_'+timestamp+'_txt';let content='التاريخ: '+dateStr+' '+timeStr+'\n\n'+text;let file=new File([new Blob([content],{type:'text/plain;charset=utf-8;'})],fileName,{type:'text/plain'});await localforage.setItem(keyName,file);showToast('تم الحفظ في الأرشيف (نوت) ✅','success');}catch(err){showToast('فشل حفظ النوت','error');}}
+async function exportBackup(){showToast('جاري تجهيز النسخة...','info');try{let keys=await localforage.keys();let backupData={files:[]};for(let key of keys){let file=await localforage.getItem(key);if(file&&file instanceof File){if(file.type==='text/plain'){let text=await file.text();backupData.files.push({key,name:file.name,type:file.type,content:text,isText:true});}else{let base64=await new Promise((resolve)=>{let reader=new FileReader();reader.onload=(e)=>resolve(e.target.result);reader.readAsDataURL(file);});backupData.files.push({key,name:file.name,type:file.type,content:base64,isText:false});}}else if(file&&file.file){let f=file.file;let base64=await new Promise((resolve)=>{let reader=new FileReader();reader.onload=(e)=>resolve(e.target.result);reader.readAsDataURL(f);});backupData.files.push({key,name:f.name,type:f.type,content:base64,isText:false,deletedAt:file.deletedAt});}}let blob=new Blob([JSON.stringify(backupData)],{type:'application/json'});downloadFile(blob,'Backup_Archive_'+new Date().toISOString().split('T')[0]+'.json','application/json');showToast('تم التنزيل ✅','success');}catch(e){showToast('خطأ: '+e.message,'error');}}
+async function importBackup(event){let file=event.target.files[0];if(!file)return;if(!confirm('استعادة النسخة الاحتياطية؟'))return;let reader=new FileReader();reader.onload=async function(e){try{let data=JSON.parse(e.target.result);if(!data.files)throw new Error('invalid');for(let item of data.files){let fileBlob;if(item.isText){fileBlob=new File([item.content],item.name,{type:item.type});}else{let res=await fetch(item.content);let blob=await res.blob();fileBlob=new File([blob],item.name,{type:item.type});}if(item.deletedAt){await localforage.setItem(item.key,{file:fileBlob,deletedAt:item.deletedAt});}else{await localforage.setItem(item.key,fileBlob);}}showToast('تم الاستعادة ✅','success');loadArchive();}catch(err){showToast('فشل: '+err.message,'error');}};reader.readAsText(file);event.target.value='';}
+async function loadArchive(){let listContainer=document.getElementById('archiveList');listContainer.innerHTML='<p style="text-align:center;color:#aaa">جاري التحميل...</p>';let searchQuery=(document.getElementById('archiveSearchInput').value||'').trim().toLowerCase();let filterCat=document.getElementById('archiveFilterSelect').value;document.getElementById('autoDeleteSelect').value=localStorage.getItem('archiveAutoDelete')||'0';try{let keys=await localforage.keys();if(!keys||keys.length===0){listContainer.innerHTML='<p style="text-align:center;color:#666;font-size:13px">الأرشيف فاضي.</p>';return;}let items=[];for(let key of keys){let file=await localforage.getItem(key);if(!file)continue;if(key.startsWith('TRASH_')){if(filterCat==='__TRASH__'||filterCat==='all'){let origKey=key.substring(6);let parts=origKey.split('_');let format=parts.pop();let timestamp=parseInt(parts.pop());let category=parts.join('_');items.push({key,file:file.file,category:'__TRASH__',origCategory:category,timestamp:file.deletedAt||0,displayDate:new Date(file.deletedAt||0).toLocaleDateString('ar-EG'),fileName:file.file.name,format,isTrash:true});}continue;}let parts=key.split('_');let format=parts.pop();let timestamp=parseInt(parts.pop());let category=parts.join('_');if(!timestamp)continue;let dateObj=new Date(timestamp);let displayDate=dateObj.toLocaleDateString('ar-EG')+' '+dateObj.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});let textContent='';if(format==='txt'){try{textContent=await file.text();}catch(e){}}items.push({key,file,category,timestamp,displayDate,fileName:file.name,format,textContent,isTrash:false});}let filtered=items.filter(function(item){let matchCat=(filterCat==='all')||(item.category===filterCat);let matchSearch=(searchQuery==='')||item.category.toLowerCase().includes(searchQuery)||item.displayDate.includes(searchQuery)||item.fileName.toLowerCase().includes(searchQuery)||(item.textContent&&item.textContent.toLowerCase().includes(searchQuery));return matchCat&&matchSearch;});if(filtered.length===0){listContainer.innerHTML='<p style="text-align:center;color:#666;font-size:13px">لا يوجد نتائج.</p>';return;}filtered.sort(function(a,b){return b.timestamp-a.timestamp;});if(filterCat==='all'&&!searchQuery){listContainer.innerHTML='';let grouped={};filtered.forEach(function(item){if(!grouped[item.category])grouped[item.category]=[];grouped[item.category].push(item);});for(let catName in grouped){if(catName==='__TRASH__')continue;let catItems=grouped[catName];let folderDiv=document.createElement('div');folderDiv.className='archive-folder';folderDiv.innerHTML='<div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">📁</span><div><div style="font-weight:bold;font-size:15px">'+catName.replace(/_/g,' ')+'</div><div style="color:#aaa;font-size:12px">'+catItems.length+' ملف</div></div></div><span style="font-size:18px;color:#666">‹</span>';folderDiv.onclick=function(){document.getElementById('archiveFilterSelect').value=catName;loadArchive();};listContainer.appendChild(folderDiv);}let trashCount=(grouped['__TRASH__']||[]).length;if(trashCount>0){let trashFolder=document.createElement('div');trashFolder.className='archive-folder';trashFolder.style.borderRightColor='var(--danger)';trashFolder.innerHTML='<div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">🗑️</span><div><div style="font-weight:bold;font-size:15px">سلة المحذوفات</div><div style="color:#aaa;font-size:12px">'+trashCount+' ملف</div></div></div><span style="font-size:18px;color:#666">‹</span>';trashFolder.onclick=function(){document.getElementById('archiveFilterSelect').value='__TRASH__';loadArchive();};listContainer.appendChild(trashFolder);}}else{listContainer.innerHTML='<button class="btn btn-sm btn-gray" onclick="document.getElementById(\'archiveFilterSelect\').value=\'all\';document.getElementById(\'archiveSearchInput\').value=\'\';loadArchive();" style="margin-bottom:15px;width:100%">🔙 عرض كل المجلدات</button>';for(let item of filtered){let url=URL.createObjectURL(item.file);let previewHtml='';if(item.format==='img'){previewHtml='<img src="'+url+'" class="archive-img" onclick="window.open(\''+url+'\',\'_blank\')">';}else if(item.format==='txt'){let textContent=(item.textContent||'').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");previewHtml='<div style="background:#111;padding:15px;border-radius:8px;font-family:monospace;color:#eee;font-size:13px;border:1px solid #333;white-space:pre-wrap;max-height:250px;overflow-y:auto;text-align:left;direction:rtl">'+textContent+'</div>';}let itemDiv=document.createElement('div');itemDiv.className='archive-item';if(item.isTrash)itemDiv.style.borderRight='3px solid var(--danger)';itemDiv.innerHTML='<div class="archive-header" style="margin-bottom:8px"><span style="font-weight:bold;color:var(--text)">'+(item.isTrash?'🗑️ ':'')+item.category.replace(/_/g,' ')+'</span><span style="color:#aaa;font-size:11px;direction:ltr">'+item.displayDate+'</span></div>'+previewHtml+'<div class="row" style="margin-top:10px;margin-bottom:0">'+(item.isTrash?'<button class="btn btn-sm" style="margin-bottom:0;background:var(--success);color:#000" onclick="restoreTrash(\''+item.key+'\')">♻️ استعادة</button><button class="btn btn-sm btn-danger" style="margin-bottom:0" onclick="deletePermanently(\''+item.key+'\')">🗑️ حذف نهائي</button>':'<button class="btn btn-sm btn-gray" style="margin-bottom:0" onclick="downloadLocalFile(\''+item.key+'\',\''+item.fileName+'\')">📥 تحميل</button><button class="btn btn-sm btn-danger" style="margin-bottom:0" onclick="deleteLocalFile(\''+item.key+'\')">🗑️ حذف</button>')+'</div>';listContainer.appendChild(itemDiv);}}}catch(error){listContainer.innerHTML='<p style="text-align:center;color:var(--danger)">تعذر التحميل: '+error.message+'</p>';}}
+async function downloadLocalFile(key,filename){try{let file=await localforage.getItem(key);if(!file)return;if(file.file)file=file.file;let url=URL.createObjectURL(file);let a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),2000);showToast('تم بدء التنزيل','success');}catch(error){showToast('فشل التنزيل','error');}}
+async function deleteLocalFile(key){if(!confirm('نقل لسلة المحذوفات؟ (يمكن استعادته)'))return;try{let file=await localforage.getItem(key);if(file){await localforage.setItem('TRASH_'+key,{file:file,deletedAt:Date.now()});}await localforage.removeItem(key);showToast('نُقل للسلة 🗑️','success');loadArchive();}catch(error){showToast('فشل الحذف','error');}}
+async function restoreTrash(trashKey){try{let item=await localforage.getItem(trashKey);if(!item)return;let origKey=trashKey.substring(6);await localforage.setItem(origKey,item.file);await localforage.removeItem(trashKey);showToast('تم الاستعادة ✅','success');loadArchive();}catch(e){showToast('فشل','error');}}
+async function deletePermanently(trashKey){if(!confirm('حذف نهائي؟ لا يمكن الاستعادة!'))return;try{await localforage.removeItem(trashKey);showToast('تم الحذف النهائي','success');loadArchive();}catch(e){showToast('فشل','error');}}
+
+// CRM
+let crmCustomers=[];function loadCrmData(){try{crmCustomers=JSON.parse(localStorage.getItem('crm_v6'))||[];if(!Array.isArray(crmCustomers))crmCustomers=[];crmCustomers.forEach(c=>{if(!c.tags)c.tags=[];});}catch(e){crmCustomers=[];}}
+function addCustomerCrm(){let name=document.getElementById('custNameCrm').value.trim();let phone=document.getElementById('custPhone').value.trim();let amount=parseFloat(document.getElementById('custLoanAmount').value)||0;let followup=document.getElementById('custFollowup').value;let notes=document.getElementById('custNotes').value.trim();let tagsSel=document.getElementById('custTags');let tags=Array.from(tagsSel.selectedOptions).map(o=>o.value);if(!name||!phone){showToast('اكتب الاسم والتليفون!','error');return;}crmCustomers.unshift({id:Date.now(),name,phone,amount,followupDate:followup,status:'waiting',notes,location:'',tags});localStorage.setItem('crm_v6',JSON.stringify(crmCustomers));['custNameCrm','custPhone','custLoanAmount','custFollowup','custNotes'].forEach(id=>document.getElementById(id).value='');tagsSel.selectedIndex=-1;renderCrm();updateCrmBadge();showToast('تم إضافة العميل ✅','success');}
+function changeStatus(id,newStatus){let i=crmCustomers.findIndex(c=>c.id===id);if(i!==-1){crmCustomers[i].status=newStatus;localStorage.setItem('crm_v6',JSON.stringify(crmCustomers));renderCrm();updateCrmBadge();renderDashboard();}}
+function deleteCrmCustomer(id){if(confirm('متأكد؟')){crmCustomers=crmCustomers.filter(c=>c.id!==id);localStorage.setItem('crm_v6',JSON.stringify(crmCustomers));renderCrm();updateCrmBadge();}}
+function saveLocation(id){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(pos){let mapLink='https://maps.google.com/?q='+pos.coords.latitude+','+pos.coords.longitude;let i=crmCustomers.findIndex(c=>c.id===id);if(i!==-1){crmCustomers[i].location=mapLink;localStorage.setItem('crm_v6',JSON.stringify(crmCustomers));renderCrm();showToast('تم حفظ الموقع ✅','success');}},function(){showToast('لازم تسمح بالموقع','error');});}else{showToast('غير مدعوم','error');}}
+function renderCrm(){loadCrmData();let list=document.getElementById('customerList');let search=(document.getElementById('crmSearch')?document.getElementById('crmSearch').value.trim().toLowerCase():'');list.innerHTML='';if(crmCustomers.length===0){list.innerHTML='<p style="text-align:center;color:#666;font-size:13px">لا يوجد عملاء.</p>';document.getElementById('totalActivatedCount').innerText='0';document.getElementById('totalActivatedAmount').innerText='0';return;}let activated=crmCustomers.filter(c=>c.status==='activated');let totalAmt=activated.reduce((s,c)=>s+(c.amount||0),0);document.getElementById('totalActivatedCount').innerText=activated.length;document.getElementById('totalActivatedAmount').innerText=totalAmt.toLocaleString()+' ج.م';let today=new Date().toISOString().split('T')[0];let filtered=crmCustomers.filter(c=>!search||(c.name||'').toLowerCase().includes(search)||(c.phone||'').includes(search)||(c.notes||'').toLowerCase().includes(search));filtered.sort((a,b)=>(a.followupDate||'9999-12-31').localeCompare(b.followupDate||'9999-12-31'));filtered.forEach(function(c){let phoneStr=c.phone?c.phone.toString():'';let cleanPhone=phoneStr.replace(/[^0-9+]/g,'');let waPhone=formatPhone(phoneStr);let greeting='أهلاً '+(c.name||'عميلنا')+' في Seven Finance 🚀\n\nأنا محمد واجح. كيف أساعدك؟';let followupHTML=c.followupDate?'<div style="font-size:12px;color:'+(c.followupDate<=today?'var(--danger)':'#aaa')+';margin-bottom:5px;font-weight:700">📅 متابعة: '+c.followupDate+'</div>':'';let locHTML=c.location?'<div style="font-size:12px;margin-bottom:5px;font-weight:700"><a href="'+c.location+'" target="_blank" style="color:var(--warning)">📍 الموقع</a></div>':'';let notesHTML=c.notes?'<div class="crm-notes">📝 '+escapeHtml(c.notes)+'</div>':'';let tagsHTML=(c.tags&&c.tags.length)?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">'+c.tags.map(t=>{let cls='tag';if(t==='VIP')cls+=' tag-vip';else if(t==='Hot')cls+=' tag-hot';else if(t==='New')cls+=' tag-new';return '<span class="'+cls+'" style="font-size:10px;padding:2px 8px;border-radius:10px;background:#333;color:#fff;font-weight:700;">'+escapeHtml(t)+'</span>';}).join('')+'</div>':'';list.innerHTML+='<div class="customer-card status-'+c.status+'"><div class="crm-header"><div><div class="crm-name">'+escapeHtml(c.name||'بدون اسم')+'</div><div class="crm-phone-row"><span class="crm-phone">'+escapeHtml(phoneStr)+'</span><a href="tel:'+cleanPhone+'" class="quick-action quick-call">📞</a><a href="https://wa.me/'+waPhone+'?text='+encodeURIComponent(greeting)+'" target="_blank" class="quick-action quick-wa">💬</a><button onclick="saveLocation('+c.id+')" class="quick-action quick-gps">📍</button></div>'+tagsHTML+'</div><button class="btn-delete-crm" onclick="deleteCrmCustomer('+c.id+')">🗑️</button></div><div class="crm-amount">💰 '+(c.amount?c.amount.toLocaleString()+' ج.م':'غير محدد')+'</div>'+locHTML+followupHTML+notesHTML+'<div class="crm-actions"><button class="action-status-btn '+(c.status==='waiting'?'active active-waiting':'')+'" onclick="changeStatus('+c.id+',\'waiting\')">⏳ انتظار</button><button class="action-status-btn '+(c.status==='activated'?'active active-activated':'')+'" onclick="changeStatus('+c.id+',\'activated\')">✅ تفعيل</button><button class="action-status-btn '+(c.status==='rejected'?'active active-rejected':'')+'" onclick="changeStatus('+c.id+',\'rejected\')">❌ مرفوض</button><button class="action-status-btn '+(c.status==='no-answer'?'active active-no-answer':'')+'" onclick="changeStatus('+c.id+',\'no-answer\')">📵 مردش</button><button class="action-status-btn '+(c.status==='not-interested'?'active active-not-interested':'')+'" onclick="changeStatus('+c.id+',\'not-interested\')">🚫 مش عاوز</button></div></div>';});}
+function updateCrmBadge(){loadCrmData();let today=new Date().toISOString().split('T')[0];let due=crmCustomers.filter(c=>c.followupDate&&c.followupDate<=today&&c.status==='waiting').length;let badge=document.getElementById('crmBadge');if(badge){if(due>0){badge.style.display='inline-block';badge.textContent=due;}else{badge.style.display='none';}}}
+function bulkWhatsApp(){let msg=prompt('اكتب الرسالة اللي هتبعتها لكل العملاء:\n(استخدم {name} لاسم العميل)','أهلاً {name}، عندنا عروض جديدة! تواصل معايا.');if(!msg)return;let status=prompt('لأي حالة؟\n1- waiting\n2- activated\n3- no-answer\n4- all','1');let statuses={1:'waiting',2:'activated',3:'no-answer',4:'all'};let targetStatus=statuses[parseInt(status)]||'waiting';let targets=crmCustomers.filter(c=>targetStatus==='all'||c.status===targetStatus);if(!targets.length){showToast('مفيش عملاء في الحالة دي','error');return;}if(!confirm('هتفتح '+targets.length+' شات واتساب. متأكد؟'))return;targets.forEach((c,i)=>{setTimeout(()=>{openWhatsApp(c.phone,msg.replace(/{name}/g,c.name));},i*1500);});showToast('جاري الفتح...','info');}
+
+// DOCS
+const defaultDocs=[{id:'doc1',text:'صورة بطاقة الرقم القومي (وش وضهر) - أساسي'},{id:'doc2',text:'ميدكال / تأمين صحي (إن أمكن)'},{id:'doc3',text:'رخصة عربية (إن أمكن)'},{id:'doc4',text:'كارنيه نادي (إن أمكن)'}];
+function renderDocs(){let list=document.getElementById('docsList');list.innerHTML='';defaultDocs.forEach(function(doc){let checked=localStorage.getItem(doc.id)==='true';list.innerHTML+='<label class="list-item" style="cursor:pointer;margin-bottom:5px;"><div style="display:flex;align-items:center;width:100%;"><input type="checkbox" class="checkbox" '+(checked?'checked':'')+' onchange="toggleDoc(\''+doc.id+'\',this)"><span style="font-size:13px;font-weight:700;'+(checked?'text-decoration:line-through;color:#666;':'')+'">'+doc.text+'</span></div></label>';});}
+function toggleDoc(id,checkbox){localStorage.setItem(id,checkbox.checked);renderDocs();}
+function shareDocsWhatsApp(){openWhatsApp('','أهلاً بك في Seven Finance. 🚀\n\nمحتاج منك:\n1️⃣ صورة بطاقة الرقم القومي (وش وضهر).\n\nمستني صور الأوراق! ✅');}
+
+// REPORT (with Smart Paste)
+function smartPasteNameCode() {
+    let text = prompt("الصق رسالة الواتساب هنا (هناخد الاسم والكود بس):");
+    if (!text) return;
+    let codeMatch = text.match(/\d+/);
+    let code = codeMatch ? codeMatch[0] : '';
+    let name = text.replace(/\d+/g, '')
+                  .replace(/(كود|Code|اسم|Name|:)/gi, '')
+                  .replace(/\s+/g, ' ')
+                  .trim();
+    if (code) document.getElementById('custID').value = code;
+    if (name) document.getElementById('custName').value = name;
+    showToast('تم سحب الاسم والكود! اكتب الليميت واضغط إضافة.', 'success');
+}
+function toggleSettings(){let a=document.getElementById('settingsArea');a.style.display=a.style.display==='block'?'none':'block';}
+function saveSettings(){localStorage.setItem('baseCount',parseInt(document.getElementById('startCount').value)||0);localStorage.setItem('baseLimit',parseInt(document.getElementById('startLimit').value)||0);updateUI();}
+function saveReportInputs(){localStorage.setItem('appCount',document.getElementById('appCount').value||'');localStorage.setItem('appLimit',document.getElementById('appLimit').value||'');localStorage.setItem('rejCount',document.getElementById('rejCount').value||'');}
+function checkDateAndReset(){const now=new Date();const dStr=now.toISOString().split('T')[0];const mStr=dStr.substring(0,7);let sDate=localStorage.getItem('lastActiveDate');let sMonth=localStorage.getItem('lastActiveMonth');if(!sDate||!sMonth){localStorage.setItem('lastActiveDate',dStr);localStorage.setItem('lastActiveMonth',mStr);return;}if(sMonth!==mStr){localStorage.setItem('baseCount',0);localStorage.setItem('baseLimit',0);localStorage.setItem('dailyCustomers','[]');setTimeout(()=>showToast('📅 شهر جديد! التوتال اتصفر','info'),500);}else if(sDate!==dStr){localStorage.setItem('dailyCustomers','[]');setTimeout(()=>showToast('☀️ يوم جديد! التوتال محفوظ','info'),500);}localStorage.setItem('lastActiveDate',dStr);localStorage.setItem('lastActiveMonth',mStr);}
+
+function getAutoAchieved() {
+    const selectedDate = document.getElementById('reportDate')?.value || new Date().toISOString().split('T')[0];
+    const monthStr = selectedDate.substring(0, 7);
+    const sCount = parseInt(localStorage.getItem('baseCount')) || 0;
+    let logCount = 0;
+    try { const log = JSON.parse(localStorage.getItem('dailyLog_v1') || '[]'); logCount = log.filter(e => e.date.startsWith(monthStr)).reduce((s, e) => s + (e.dCount || 0), 0); } catch(e){}
+    let contractCount = 0;
+    try { const contracts = JSON.parse(localStorage.getItem('contracts_v6') || '[]'); contractCount = contracts.filter(c => c.date && c.date.startsWith(monthStr)).reduce((s, c) => s + (c.count || 0), 0); } catch(e){}
+    return sCount + logCount + contractCount;
+}
+function getAutoLimit() {
+    const selectedDate = document.getElementById('reportDate')?.value || new Date().toISOString().split('T')[0];
+    const monthStr = selectedDate.substring(0, 7);
+    const sLimit = parseInt(localStorage.getItem('baseLimit')) || 0;
+    let logLimit = 0;
+    try { const log = JSON.parse(localStorage.getItem('dailyLog_v1') || '[]'); logLimit = log.filter(e => e.date.startsWith(monthStr)).reduce((s, e) => s + (e.dLimit || 0), 0); } catch(e){}
+    return sLimit + logLimit;
+}
+function saveDashTarget(val) { localStorage.setItem('monthlyTarget', val); renderDashboard(); }
+
+let dailyCustomers=[];function formatK(num){let m=Math.floor(num/1000);let k=num%1000;if(m===0)return num+'K';if(k===0)return m+'M';return m+'M'+k+'K';}
+function onReportDateChange(){let selectedDate=document.getElementById('reportDate').value;if(!selectedDate)return;let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];let entry=log.find(l=>l.date===selectedDate);if(entry){dailyCustomers=(entry.customers||[]).map(c=>({name:c.name,id:c.code,nid:c.nid||'',location:c.location||'Menoufia',limit:c.limit}));document.getElementById('appCount').value=(entry.appC&&entry.appC!=='0')?entry.appC:'';document.getElementById('appLimit').value=(entry.appL&&entry.appL!=='0')?entry.appL:'';document.getElementById('rejCount').value=(entry.rejC&&entry.rejC!=='0')?entry.rejC:'';}else{dailyCustomers=[];document.getElementById('appCount').value='';document.getElementById('appLimit').value='';document.getElementById('rejCount').value='';}localStorage.setItem('dailyCustomers',JSON.stringify(dailyCustomers));saveReportInputs();updateUI();}
+function addCustomer(){const name=document.getElementById('custName').value.trim();const id=document.getElementById('custID').value.trim();const nid=document.getElementById('custNID').value.trim();const loc=document.getElementById('custLocation').value.trim()||'Menoufia';const limit=parseInt(document.getElementById('custLimit').value);if(!name||!id||isNaN(limit)){showToast('املأ الاسم والكود والليميت!','error');return;}dailyCustomers=JSON.parse(localStorage.getItem('dailyCustomers'))||[];dailyCustomers.push({name,id,nid,location:loc,limit});localStorage.setItem('dailyCustomers',JSON.stringify(dailyCustomers));['custName','custID','custNID','custLimit'].forEach(id=>document.getElementById(id).value='');updateUI();showToast('تم إضافة العميل','success');}
+function deleteCustomer(index){if(confirm("مسح العميل؟")){dailyCustomers.splice(index,1);localStorage.setItem('dailyCustomers',JSON.stringify(dailyCustomers));updateUI();}}
+function manualResetMonth(){if(confirm("⚠️ تصفير الكل؟ سيتم مسح جميع السجلات!")){localStorage.clear();location.reload();}}
+function updateUI(){dailyCustomers=JSON.parse(localStorage.getItem('dailyCustomers'))||[];let dCount=dailyCustomers.length;let dLimit=dailyCustomers.reduce((s,c)=>s+c.limit,0);let selectedDate=document.getElementById('reportDate').value||new Date().toISOString().split('T')[0];let monthStr=selectedDate.substring(0,7);let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];let monthLogCount=0;let monthLogLimit=0;log.forEach(e=>{if(e.date.startsWith(monthStr)&&e.date!==selectedDate){monthLogCount+=(e.dCount||0);monthLogLimit+=(e.dLimit||0);}});let sCount=parseInt(document.getElementById('startCount').value)||0;let sLimit=parseInt(document.getElementById('startLimit').value)||0;let manualContracts=0;try{let cList=JSON.parse(localStorage.getItem('contracts_v6'))||[];manualContracts=cList.filter(c=>c.date&&c.date.startsWith(monthStr)).reduce((sum,c)=>sum+(c.count||0),0);}catch(e){}let totalMonthlyCount=sCount+monthLogCount+dCount+manualContracts;let totalMonthlyLimit=sLimit+monthLogLimit+dLimit;document.getElementById('dailyCount').innerText=String(dCount).padStart(2,'0');document.getElementById('dailyLimits').innerText=dLimit+'K';document.getElementById('monthlyCount').innerText=totalMonthlyCount;document.getElementById('monthlyLimits').innerText=formatK(totalMonthlyLimit);let breakdownEl=document.getElementById('monthlyCountBreakdown');if(breakdownEl){breakdownEl.innerText=`(Start: ${sCount} + Past: ${monthLogCount} + Today: ${dCount} + Contract: ${manualContracts})`;}let listHtml='';if(dailyCustomers.length===0){listHtml='<div style="text-align:center;color:#888;margin-bottom:20px;font-weight:700">لا يوجد عملاء اليوم</div>';}else{dailyCustomers.forEach(function(c,i){let num=String(i+1).padStart(2,'0');listHtml+='<div class="report-item"><div class="report-info"><span class="report-name">'+num+'. Name: '+c.name+'</span><span class="report-detail">Code: '+c.id+'</span><span class="report-detail" style="color:var(--success);">Limit: '+c.limit+'K</span></div><button class="report-delete-btn" onclick="deleteCustomer('+i+')">✖</button></div>';});}let appC=document.getElementById('appCount').value||'00';let appL=document.getElementById('appLimit').value||'00';let rejC=document.getElementById('rejCount').value||'00';let summaryHtml=`<div class="report-divider"></div><div class="report-section-title">*Daily*</div><div class="report-summary-line">Total visited Customers: ${String(dCount).padStart(2,'0')}</div><div class="report-summary-line">Activated Customer: ${String(dCount).padStart(2,'0')}</div><div class="report-summary-line">Activated limit: ${dLimit}K</div><div class="report-summary-line">Approved: ${appC} (${appL}K)</div><div class="report-summary-line">Rejected customers: ${rejC}</div><div class="report-divider"></div><div class="report-section-title">*Monthly*</div><div class="report-summary-line">Total Contracts: ${totalMonthlyCount}</div><div class="report-summary-line">Total Limit: ${formatK(totalMonthlyLimit)}</div>`;document.getElementById('reportText').innerHTML=listHtml+summaryHtml;saveDailyLog();}
+
+function getCleanText(){let dCount=dailyCustomers.length;let dLimit=dailyCustomers.reduce((s,c)=>s+c.limit,0);let selectedDate=document.getElementById('reportDate').value||new Date().toISOString().split('T')[0];let monthStr=selectedDate.substring(0,7);let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];let monthLogCount=0;let monthLogLimit=0;log.forEach(e=>{if(e.date.startsWith(monthStr)&&e.date!==selectedDate){monthLogCount+=(e.dCount||0);monthLogLimit+=(e.dLimit||0);}});let sCount=parseInt(document.getElementById('startCount').value)||0;let sLimit=parseInt(document.getElementById('startLimit').value)||0;let manualContracts=0;try{let cList=JSON.parse(localStorage.getItem('contracts_v6'))||[];manualContracts=cList.filter(c=>c.date&&c.date.startsWith(monthStr)).reduce((sum,c)=>sum+(c.count||0),0);}catch(e){}let totalMonthlyCount=sCount+monthLogCount+dCount+manualContracts;let totalMonthlyLimit=sLimit+monthLogLimit+dLimit;let text='*Daily report*\n\nLocation: MENOUFIA\nAgent name: M. Wageh\nDate : '+selectedDate+'\n_______________________\n\n';if(dailyCustomers.length===0)text+='لا يوجد عملاء اليوم\n\n';else dailyCustomers.forEach(function(c,i){let num=String(i+1).padStart(2,'0');text+=num+'. Name: '+c.name+'\n    Code: '+c.id+'\n    Limit: '+c.limit+'K\n\n';});text+='_______________________\n\n';let appC=document.getElementById('appCount').value||'00';let appL=document.getElementById('appLimit').value||'00';let rejC=document.getElementById('rejCount').value||'00';text+='*Daily*\nTotal visited Customers: '+String(dCount).padStart(2,'0')+'\nActivated Customer: '+String(dCount).padStart(2,'0')+'\nActivated limit: '+dLimit+'K\nApproved: '+appC+' ('+appL+'K)\nRejected customers: '+rejC+'\n_______________________\n\n';text+='*Monthly*\nTotal Contracts: '+totalMonthlyCount+'\nTotal Limit: '+formatK(totalMonthlyLimit);return text;}
+function copyReport(){copyToClipboard(getCleanText()).then(ok=>showToast(ok?'تم نسخ التقرير':'تعذر النسخ',ok?'success':'error'));}
+function shareWhatsApp(){openWhatsApp('',getCleanText());}
+function saveDailyLog(){try{let date=document.getElementById('reportDate').value||new Date().toISOString().split('T')[0];let dailyCust=JSON.parse(localStorage.getItem('dailyCustomers'))||[];let appC=document.getElementById('appCount').value;let rejC=document.getElementById('rejCount').value;let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];let existingIdx=log.findIndex(l=>l.date===date);if(dailyCust.length===0&&!appC&&!rejC){if(existingIdx!==-1){log.splice(existingIdx,1);localStorage.setItem('dailyLog_v1',JSON.stringify(log));}renderDailyLog();return;}let snapshot={date:date,agent:'Mohamed Wageh',customers:dailyCust.map(c=>({name:c.name,code:c.id,nid:c.nid||'',location:c.location||'Menoufia',limit:c.limit})),appC:appC||'0',appL:document.getElementById('appLimit').value||'0',rejC:rejC||'0',dCount:dailyCust.length,dLimit:dailyCust.reduce((s,c)=>s+c.limit,0),sCount:parseInt(document.getElementById('startCount').value)||0,sLimit:parseInt(document.getElementById('startLimit').value)||0,savedAt:Date.now()};if(existingIdx!==-1)log[existingIdx]=snapshot;else log.push(snapshot);log.sort((a,b)=>b.date.localeCompare(a.date));localStorage.setItem('dailyLog_v1',JSON.stringify(log));renderDailyLog();}catch(e){console.error('saveDailyLog',e);}}
+function renderDailyLog(){let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];let container=document.getElementById('dailyLogList');let countEl=document.getElementById('logCount');if(!container)return;if(countEl)countEl.textContent=log.length+' يوم';if(log.length===0){container.innerHTML='<p class="log-empty">لسه مفيش سجل — ضيف عميل وهيظهر هنا تلقائياً ✅</p>';return;}let html='';log.forEach(function(entry){let dateObj=new Date(entry.date);let monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];let monthStr=isNaN(dateObj.getTime())?'':monthNames[dateObj.getMonth()]+' '+dateObj.getFullYear();let rows='';if(!entry.customers||entry.customers.length===0){rows='<tr><td colspan="8" style="text-align:center;color:#888;padding:10px;">No customers</td></tr>';}else{entry.customers.forEach(function(c){rows+='<tr><td>'+escapeHtml(c.name)+'</td><td>'+escapeHtml(String(c.code))+'</td><td>'+escapeHtml(c.nid||'')+'</td><td>'+entry.agent+'</td><td>'+escapeHtml(c.location||'Menoufia')+'</td><td>'+c.limit+'K</td><td>'+entry.date+'</td><td>Activated</td></tr>';});}html+='<div class="log-entry"><div class="log-entry-header"><div class="log-entry-date">📅 '+entry.date+'</div><button class="log-delete-btn" onclick="deleteDailyLogEntry(\''+entry.date+'\')">🗑️</button></div><div class="excel-log-wrapper"><div class="excel-log-title">Delta Sales Sheet '+monthStr+'</div><table class="excel-log-table"><thead><tr><th>Client Name</th><th>Account No</th><th>NID</th><th>Sales Agent Name</th><th>Activation Location</th><th>Credit Limit</th><th>Activation Date</th><th>Application Status</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';});container.innerHTML=html;}
+function deleteDailyLogEntry(date){if(!confirm('مسح سجل يوم '+date+' ؟'))return;let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];log=log.filter(l=>l.date!==date);localStorage.setItem('dailyLog_v1',JSON.stringify(log));renderDailyLog();updateUI();showToast('تم مسح السجل','success');}
+function shareDailyLogWA(){let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];if(log.length===0){showToast('لا يوجد سجل','error');return;}let text='*DAILY AUTO LOG*\nAgent: Mohamed Wageh\n\n';log.forEach(function(entry){text+='━━━━━━━━━━━━━━\n📅 '+entry.date+'\n━━━━━━━━━━━━━━\n';if(!entry.customers||entry.customers.length===0)text+='لا يوجد عملاء\n';else entry.customers.forEach(function(c){text+='Client Name: '+c.name+'\nAccount No: '+c.code+'\nNID: '+(c.nid||'')+'\nLocation: '+(c.location||'Menoufia')+'\nLimit: '+c.limit+'K\n----------------\n';});text+='\nDaily: '+entry.dCount+' | '+entry.dLimit+'K\nApproved: '+entry.appC+' ('+entry.appL+'K) | Rejected: '+entry.rejC+'\n\n';});openWhatsApp('',text);}
+function exportMonthToExcel(){try{let log=JSON.parse(localStorage.getItem('dailyLog_v1'))||[];if(log.length===0){showToast('لا يوجد سجل لتصديره!','error');return;}let targetMonthStr=document.getElementById('reportDate').value.substring(0,7);if(!targetMonthStr)targetMonthStr=new Date().toISOString().substring(0,7);let monthLogs=log.filter(l=>l.date.startsWith(targetMonthStr));if(monthLogs.length===0){monthLogs=log.slice();targetMonthStr=log[0].date.substring(0,7);showToast('تم تحميل أحدث شهر مسجل لعدم وجود بيانات للشهر المختار','info');}let dateObj=new Date(targetMonthStr+'-01T00:00:00');let monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];let monthYearString=monthNames[dateObj.getMonth()]+' '+dateObj.getFullYear();let title='Delta Sales Sheet '+monthYearString;let headers=['Client Name','Account No','NID','Sales Agent Name','Activation Location','Credit Limit','Activation Date','Application Status','Limit'];let aoa=[];aoa.push([title]);aoa.push(headers);monthLogs.sort((a,b)=>a.date.localeCompare(b.date));monthLogs.forEach(function(entry){if(entry.customers&&entry.customers.length>0){entry.customers.forEach(function(c){aoa.push([c.name,c.code,c.nid||'',entry.agent||'Mohamed Wageh',c.location||'Menoufia',c.limit+'K',entry.date,'Activated',c.limit]);});}});let ws=XLSX.utils.aoa_to_sheet(aoa);ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:8}}];ws['!cols']=[{wch:25},{wch:15},{wch:20},{wch:20},{wch:20},{wch:12},{wch:15},{wch:18},{wch:10}];let wb=XLSX.utils.book_new();let sheetName=monthYearString.replace(' ','_');XLSX.utils.book_append_sheet(wb,ws,sheetName);XLSX.writeFile(wb,'Delta Sales Sheet '+monthYearString+'.xlsx');showToast('تم تحميل شيت الإكسيل بنجاح ✅','success');}catch(e){console.error(e);showToast('حدث خطأ في تصدير الملف: '+e.message,'error');}}
+
+// CONTRACTS
+let contracts=[];function addContract(){let count=parseInt(document.getElementById('contractCount').value);let date=document.getElementById('contractDate').value;let note=document.getElementById('contractNote').value.trim();let waybill=document.getElementById('contractWaybill').value.trim();let receiver=document.getElementById('contractReceiver').value.trim();let status=document.getElementById('contractStatus').value;if(!count||!date){showToast('أدخل التاريخ والعدد!','error');return;}contracts=JSON.parse(localStorage.getItem('contracts_v6'))||[];contracts.unshift({id:Date.now(),count,date,note,waybill,receiver,status});localStorage.setItem('contracts_v6',JSON.stringify(contracts));['contractCount','contractNote','contractWaybill','contractReceiver'].forEach(id=>document.getElementById(id).value='');renderContracts();updateUI();showToast('تم حفظ التسليمة','success');}
+function deleteContract(id){if(confirm("متأكد؟")){contracts=contracts.filter(c=>c.id!==id);localStorage.setItem('contracts_v6',JSON.stringify(contracts));renderContracts();updateUI();}}
+function renderContracts(){contracts=JSON.parse(localStorage.getItem('contracts_v6'))||[];let list=document.getElementById('contractsList');list.innerHTML='';let total=0;if(contracts.length===0)list.innerHTML='<p style="text-align:center;color:#666;font-size:13px;padding: 10px;">لا توجد تسليمات محفوظة.</p>';else contracts.forEach(function(c){total+=c.count;let noteHtml=c.note?'<div class="contract-note-text">📝 '+c.note+'</div>':'';let waybillHtml=c.waybill?'<div style="font-size:12px;color:#fff;margin-top:3px;font-weight:700">📦 بوليصة: '+c.waybill+'</div>':'';let receiverHtml=c.receiver?'<div style="font-size:12px;color:#fff;margin-top:3px;font-weight:700">📍 المستلم: '+c.receiver+'</div>':'';let statusText='';let statusClass='';if(c.status==='delivered'){statusText='✅ تم التسليم';statusClass='delivered';}else if(c.status==='returned'){statusText='↩️ مرتجع';statusClass='returned';}else{statusText='🚚 في الطريق';statusClass='in-transit';}list.innerHTML+='<div class="contract-card"><div class="contract-info"><div class="contract-header-row"><span class="contract-date" style="font-weight:800">📅 '+c.date+'</span><span class="contract-count" style="font-weight:900">'+c.count+' عقد <span class="contract-status '+statusClass+'">'+statusText+'</span></span></div>'+waybillHtml+receiverHtml+noteHtml+'</div><button class="btn-delete-crm" style="margin-right: 10px;" onclick="deleteContract('+c.id+')">🗑️</button></div>';});document.getElementById('contractsTotalBox').innerHTML='إجمالي العقود المسلمة: <span style="color:var(--primary);font-size: 20px;">'+total+'</span>';}
+function shareContractsWA(){if(contracts.length===0){showToast('لا يوجد تسليمات','error');return;}let msg='*CONTRACTS DELIVERY LOG*\n```\nDate | Count | Waybill | Receiver\n----------------\n';let t=0;contracts.forEach(function(c){t+=c.count;let wb=c.waybill?' ('+c.waybill+')':'';let rc=c.receiver?' - '+c.receiver:'';msg+=c.date+' | '+c.count+wb+rc+'\n';});msg+='----------------\nTotal | '+t+'\n```';openWhatsApp('',msg);}
+
+// EMAILS
+function generateEmailContent(){let d=new Date(document.getElementById('emailDate').value);let months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];let formatted=d.getDate()+' '+months[d.getMonth()];return{subject:'Submission of Customer Contracts - Menoufia '+formatted,body:'Dears,\n\nPlease note that the contracts package was sent via Aramex today, ('+formatted+').\n\nAttached are the Excel sheet of the sent contracts and the Aramex waybill.\n\nGovernorate: (MENOUFIA)\n\nSales Representative: (Mohamed WAGEH)\n\nKindly confirm receipt upon delivery.\n\nBest regards,\nMohamed WAGEH'};}
+function updateEmailPreview(){let c=generateEmailContent();document.getElementById('previewSubject').innerText=c.subject;document.getElementById('previewBody').innerText=c.body;}
+function shareToOutlookWithFiles(){let c=generateEmailContent();let fullText='Subject: '+c.subject+'\n\n'+c.body;if(navigator.share){navigator.share({title:c.subject,text:fullText}).then(()=>showToast('تم فتح المشاركة','success')).catch(err=>{if(err.name==='AbortError')return;openWhatsApp('',fullText);});}else{openWhatsApp('',fullText);}}
+function copyEmailText(){let c=generateEmailContent();copyToClipboard('Subject: '+c.subject+'\n\n'+c.body).then(ok=>showToast(ok?'تم النسخ':'تعذر النسخ',ok?'success':'error'));}
+
+// TEAM
+let team=[];function addTeamMember(){let name=document.getElementById('teamName').value.trim();let off=document.getElementById('teamOffDay').value;if(!name)return;team=JSON.parse(localStorage.getItem('team_v6'))||[];team.push({id:Date.now(),name,offDay:off});localStorage.setItem('team_v6',JSON.stringify(team));document.getElementById('teamName').value='';renderTeam();}
+function deleteTeamMember(id){if(confirm("مسح المندوب؟")){team=team.filter(t=>t.id!==id);localStorage.setItem('team_v6',JSON.stringify(team));renderTeam();}}
+function renderTeam(){team=JSON.parse(localStorage.getItem('team_v6'))||[];let t=document.getElementById('teamTableBody');t.innerHTML='';document.getElementById('totalTeamCount').innerText=team.length;team.forEach(function(x){let dayDisplay=x.offDay==='None'?'—':x.offDay;t.innerHTML+='<tr><td>'+x.name+'</td><td>'+dayDisplay+'</td><td class="no-print"><button class="delete-col" onclick="deleteTeamMember('+x.id+')">✖</button></td></tr>';});}
+function canvasToPngBlobAndShare(canvas,filename,title){canvas.toBlob(function(blob){let f=new File([blob],filename,{type:'image/png'});shareFiles([f],title,title);});}
+function shareScheduleAsImage(){if(team.length===0){showToast('لا يوجد فريق','error');return;}html2canvas(document.getElementById('scheduleTableContainer'),{backgroundColor:'#ffffff',scale:2}).then(canvas=>canvasToPngBlobAndShare(canvas,'Schedule.png','جدول الإجازات')).catch(()=>showToast('تعذر إنشاء الصورة','error'));}
+
+// SALES REPORT
+let dailyReports=[];function addReport(){let n=document.getElementById('reportName').value.trim();let c=parseInt(document.getElementById('reportClients').value)||0;let l=parseInt(document.getElementById('reportLimit').value)||0;if(!n)return;dailyReports=JSON.parse(localStorage.getItem('reports_v5'))||[];dailyReports.push({id:Date.now(),name:n,clients:c,limit:l});localStorage.setItem('reports_v5',JSON.stringify(dailyReports));document.getElementById('reportName').value='';document.getElementById('reportClients').value='';document.getElementById('reportLimit').value='';renderReports();}
+function deleteReport(id){dailyReports=dailyReports.filter(r=>r.id!==id);localStorage.setItem('reports_v5',JSON.stringify(dailyReports));renderReports();}
+function renderReports(){dailyReports=JSON.parse(localStorage.getItem('reports_v5'))||[];let t=document.getElementById('dailyReportBody');t.innerHTML='';let tc=0,tl=0;dailyReports.forEach(function(r){tc+=r.clients;tl+=r.limit;t.innerHTML+='<tr><td>'+r.name+'</td><td>'+r.clients+'</td><td style="color:var(--excel-green);font-weight:900">'+r.limit+'K</td><td class="no-print"><button class="delete-col" onclick="deleteReport('+r.id+')">✖</button></td></tr>';});document.getElementById('totalClientsCount').innerText=tc;document.getElementById('totalLimitAmount').innerText=tl+'K';}
+function shareSalesReportExcel(){if(dailyReports.length===0){showToast('لا يوجد بيانات','error');return;}let csv="\uFEFFSales Name,Clients,Limit\n";let tc=0,tl=0;dailyReports.forEach(function(r){tc+=r.clients;tl+=r.limit;csv+=r.name+','+r.clients+','+r.limit+'\n';});csv+='Total,'+tc+','+tl+'\n';let f=new File([new Blob([csv],{type:'text/csv;charset=utf-8;'})],'Sales_Report.csv',{type:'text/csv'});shareFiles([f],'تقرير السيلز','تقرير السيلز اليومي');}
+
+// OFFICE
+document.getElementById('wordFileInput').addEventListener('change',function(e){let file=e.target.files[0];if(!file)return;if(file.name.endsWith('.docx')){let reader=new FileReader();reader.onload=function(event){mammoth.convertToHtml({arrayBuffer:event.target.result}).then(function(result){document.getElementById('wordEditor').innerHTML=result.value;showToast('تم تحميل الوورد','success');}).catch(function(){showToast('خطأ في القراءة','error');});};reader.readAsArrayBuffer(file);}else if(file.name.endsWith('.txt')){let reader=new FileReader();reader.onload=function(event){document.getElementById('wordEditor').innerText=event.target.result;showToast('تم تحميل الملف النصي','success');};reader.readAsText(file);}else{showToast('اختر .docx أو .txt','error');}});
+function downloadWord(){let content=document.getElementById('wordEditor').innerHTML;if(!content||content.trim()===''){showToast('المستند فاضي!','error');return;}let header="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Word Document</title></head><body dir='rtl' style='font-family: Arial, sans-serif;'>";let sourceHTML=header+content+'</body></html>';let blob=new Blob(['\ufeff',sourceHTML],{type:'application/msword'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='Document.doc';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);showToast('تم تحميل الوورد','success');}
+function initEmptyExcel(){let html='<table id="excelEditorTable" contenteditable="true" style="width:100%; border-collapse:collapse; color:#000; background:#fff;">';for(let i=0;i<5;i++){html+='<tr>';for(let j=0;j<4;j++)html+='<td style="border:1px solid #ccc; padding:8px;"></td>';html+='</tr>';}html+='</table>';document.getElementById('excelEditorContainer').innerHTML=html;}
+document.getElementById('excelFileInput').addEventListener('change',function(e){let file=e.target.files[0];if(!file)return;let reader=new FileReader();reader.onload=function(event){let data=new Uint8Array(event.target.result);let workbook=XLSX.read(data,{type:'array'});let worksheet=workbook.Sheets[workbook.SheetNames[0]];let json=XLSX.utils.sheet_to_json(worksheet,{header:1});let html='<table id="excelEditorTable" contenteditable="true" style="width:100%; border-collapse:collapse; color:#000; background:#fff;">';json.forEach(row=>{html+='<tr>';row.forEach(cell=>{html+='<td style="border:1px solid #ccc; padding:8px;">'+(cell!==undefined?cell:'')+'</td>';});html+='</tr>';});html+='</table>';document.getElementById('excelEditorContainer').innerHTML=html;showToast('تم تحميل الإكسيل','success');};reader.readAsArrayBuffer(file);});
+function downloadExcel(){let table=document.getElementById('excelEditorTable');if(!table){showToast('الجدول فاضي!','error');return;}let hasData=false;table.querySelectorAll('td').forEach(cell=>{if(cell.innerText.trim()!=='')hasData=true;});if(!hasData){showToast('الجدول فاضي!','error');return;}let wb=XLSX.utils.table_to_book(table,{sheet:"Sheet1"});XLSX.writeFile(wb,"Spreadsheet.xlsx");showToast('تم تحميل الإكسيل','success');}
+function addExcelRow(){let table=document.getElementById('excelEditorTable');if(!table)return;let cols=table.rows[0].cells.length;let newRow=table.insertRow(-1);for(let i=0;i<cols;i++)newRow.insertCell(-1).contentEditable="true";}
+function addExcelCol(){let table=document.getElementById('excelEditorTable');if(!table)return;for(let i=0;i<table.rows.length;i++)table.rows[i].insertCell(-1).contentEditable="true";}
+
+// EMAIL TEMPLATES
+const emailTemplates={leave_request:{ar:{subject:"طلب إجازة [نوع الإجازة]",body:"السادة،\n\nأرجو التكرم بالموافقة على إجازة [نوع الإجازة] اعتباراً من [تاريخ البداية] وحتى [تاريخ النهاية].\n\nتفاصيل إضافية: [التفاصيل]\n\nوتفضلوا بقبول فائق الاحترام،\n[اسمك]"},en:{subject:"[Leave Type] Leave Request",body:"Dears,\n\nKindly approve my [Leave Type] leave from [Start Date] to [End Date].\n\nDetails: [Details]\n\nBest regards,\n[Your Name]"}},transfer_request:{ar:{subject:"طلب نقل",body:"السادة،\n\nأرجو الموافقة على نقلي من [المكان الحالي] إلى [المكان الجديد].\n\nشكراً،\n[اسمك]"},en:{subject:"Transfer Request",body:"Dears,\n\nKindly approve my transfer from [Current Location] to [New Location].\n\nThanks,\n[Your Name]"}},cash_advance:{ar:{subject:"طلب سلفة",body:"السادة،\n\nأرجو الموافقة على سلفة بقيمة [المبلغ] ج.م تُخصم من الراتب.\n\nشكراً،\n[اسمك]"},en:{subject:"Cash Advance",body:"Dears,\n\nKindly approve a cash advance of [Amount] EGP to be deducted from my salary.\n\nThanks,\n[Your Name]"}},resignation:{ar:{subject:"استقالة",body:"السادة،\n\nأتقدم باستقالتي. آخر يوم عمل: [التاريخ].\n\nشكراً،\n[اسمك]"},en:{subject:"Resignation",body:"Dears,\n\nPlease accept my resignation. Last working day: [Date].\n\nThanks,\n[Your Name]"}},follow_up:{ar:{subject:"متابعة طلب",body:"السادة،\n\nبرجاء إفادتي بآخر مستجدات طلب [اسم العميل].\n\nشكراً،\n[اسمك]"},en:{subject:"Follow-up",body:"Dears,\n\nKindly update me on [Customer Name]'s application status.\n\nThanks,\n[Your Name]"}},work_report:{ar:{subject:"تقرير عمل",body:"السادة،\n\nمرفق تقرير العمل.\n\nشكراً،\n[اسمك]"},en:{subject:"Work Report",body:"Dears,\n\nPlease find attached my work report.\n\nThanks,\n[Your Name]"}}};
+const leaveTypeNames={'Leave':{ar:'',en:''},'Annual':{ar:'سنوية',en:'Annual'},'Sick':{ar:'مرضية',en:'Sick'}};
+function formatDateForEmail(dateStr,lang){if(!dateStr)return'';let d=new Date(dateStr+'T00:00:00');if(isNaN(d.getTime()))return'';return d.toLocaleDateString(lang==='ar'?'ar-EG':'en-GB',{year:'numeric',month:'long',day:'numeric'});}
+function loadEmailTemplate(){let typeEl=document.getElementById('emailTemplateType');if(!typeEl)return;let showLeave=typeEl.value==='leave_request';document.getElementById('contextFields').style.display=showLeave?'block':'none';document.getElementById('leaveTypeField').style.display=showLeave?'block':'none';refreshEmailTemplate();}
+function refreshEmailTemplate(){let typeEl=document.getElementById('emailTemplateType');let langEl=document.getElementById('emailLang');if(!typeEl||!langEl)return;let type=typeEl.value;let lang=langEl.value;let template=emailTemplates[type]&&emailTemplates[type][lang];if(!template)return;let subject=template.subject;let body=template.body;if(type==='leave_request'){let leaveTypeEl=document.getElementById('leaveTypeSelect');let fromEl=document.getElementById('leaveFromDate');let toEl=document.getElementById('leaveToDate');if(leaveTypeEl&&leaveTypeEl.value){let name=(leaveTypeNames[leaveTypeEl.value]&&leaveTypeNames[leaveTypeEl.value][lang])||'';subject=subject.replace(/\[نوع الإجازة\]/g,name).replace(/\[Leave Type\]/g,name);body=body.replace(/\[نوع الإجازة\]/g,name).replace(/\[Leave Type\]/g,name);}if(fromEl){let d=formatDateForEmail(fromEl.value,lang)||(lang==='ar'?'[تاريخ البداية]':'[Start Date]');body=body.replace(/\[تاريخ البداية\]/g,d).replace(/\[Start Date\]/g,d);}if(toEl){let d=formatDateForEmail(toEl.value,lang)||(lang==='ar'?'[تاريخ النهاية]':'[End Date]');body=body.replace(/\[تاريخ النهاية\]/g,d).replace(/\[End Date\]/g,d);}}let meEl=document.getElementById('senderName');let me=(meEl&&meEl.value.trim())||(lang==='ar'?'[اسمك]':'[Your Name]');body=body.replace(/\[اسمك\]/g,me).replace(/\[Your Name\]/g,me);subject=subject.replace(/\s+/g,' ').trim();body=body.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();document.getElementById('emailSubject').value=subject;document.getElementById('emailBody').value=body;}
+function sendPreparedEmail(){let to=document.getElementById('emailTo').value.trim();let subject=document.getElementById('emailSubject').value;let body=document.getElementById('emailBody').value;if(!subject||!body){showToast('اكتب الموضوع والمحتوى!','error');return;}if(navigator.share){navigator.share({title:subject,text:body}).then(()=>showToast('تم فتح المشاركة','success')).catch(err=>{if(err&&err.name==='AbortError')return;openMailto(to,subject,body);});}else{openMailto(to,subject,body);}}
+function openMailto(to,subject,body){window.location.href='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);showToast('فتح تطبيق الإيميل...','info');}
+
+// DASHBOARD
+function renderDashboard(){
+    if(typeof Chart==='undefined')return;
+    const crm=JSON.parse(localStorage.getItem('crm_v6')||'[]');
+    const reportDate=document.getElementById('reportDate')?.value||new Date().toISOString().split('T')[0];
+    const today=new Date().toISOString().split('T')[0];
+    const followups=crm.filter(c=>c.followupDate&&c.followupDate<=today&&c.status==='waiting').length;
+    
+    const achieved = getAutoAchieved();
+    const limit = getAutoLimit();
+    const target = parseFloat(localStorage.getItem('monthlyTarget')) || 0;
+
+    const targetInput = document.getElementById('dashTargetInput');
+    if(targetInput && document.activeElement !== targetInput) {
+        targetInput.value = target || '';
+    }
+
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    set('dashMonthContracts',achieved);
+    set('dashMonthLimits',limit+'K');
+    set('dashFollowups',followups);
+    set('dashTotalCrm',crm.length);
+    
+    drawAllCharts();updateStreak();renderBadges();updateProjection();
+}
+
+function drawAllCharts(){
+    if(typeof Chart==='undefined')return;
+    const dark=!document.body.classList.contains('light');
+    const textColor=dark?'#fff':'#1c1c1e';
+    Chart.defaults.color=textColor;
+    Chart.defaults.font.family='Cairo';
+    const crm=JSON.parse(localStorage.getItem('crm_v6')||'[]');
+    const dailyLog=JSON.parse(localStorage.getItem('dailyLog_v1')||'[]');
+    
+    const achieved = getAutoAchieved();
+    const target = parseFloat(localStorage.getItem('monthlyTarget')) || 0;
+    const remaining = Math.max(0, target - achieved);
+    const pct = target > 0 ? Math.round((achieved/target)*100) : 0;
+
+    if(window.chartInstances&&chartInstances.target)chartInstances.target.destroy();
+    const ctxT=document.getElementById('chartTarget');
+    if(ctxT){
+        window.chartInstances=window.chartInstances||{};
+        chartInstances.target=new Chart(ctxT,{
+            type:'doughnut',
+            data:{labels:[translations[currentLang].calc_achieved, translations[currentLang].proj_rate],datasets:[{data:[achieved,remaining],backgroundColor:['#34c759',dark?'#2c2c2e':'#e0e0e5'],borderWidth:0}]},
+            options:{cutout:'75%',plugins:{legend:{display:true,position:'bottom',labels:{color:textColor,font:{size:12,family:'Cairo',weight:'bold'}}},tooltip:{enabled:false}}}
+        });
+    }
+
+    const centerText = document.getElementById('chartCenterText');
+    if(centerText) {
+        if (target > 0) {
+            centerText.innerHTML = `
+                <div style="color:var(--success); font-size:18px; font-weight:900">${achieved}</div>
+                <div style="color:var(--warning); font-size:12px; margin-top:2px; font-weight:800">${remaining}</div>
+                <div style="color:var(--secondary); font-size:20px; margin-top:4px; font-weight:900">${pct}%</div>
+            `;
+        } else {
+            centerText.innerHTML = `<div style="color:var(--text-muted); font-size:14px; font-weight:700">${translations[currentLang].dash_target_label}</div>`;
+        }
+    }
+
+    const statusCounts={waiting:0,activated:0,rejected:0,'no-answer':0,'not-interested':0};
+    crm.forEach(c=>{if(statusCounts[c.status]!==undefined)statusCounts[c.status]++;});
+    if(window.chartInstances&&chartInstances.status)chartInstances.status.destroy();
+    const ctxS=document.getElementById('chartStatusPie');
+    if(ctxS){window.chartInstances=window.chartInstances||{};chartInstances.status=new Chart(ctxS,{type:'pie',data:{labels:['⏳ انتظار','✅ تفعيل','❌ مرفوض','📵 مردش','🚫 مش عاوز'],datasets:[{data:[statusCounts.waiting,statusCounts.activated,statusCounts.rejected,statusCounts['no-answer'],statusCounts['not-interested']],backgroundColor:['#ffd60a','#34c759','#ff453a','#ff9f0a','#8e8e93'],borderWidth:0}]},options:{plugins:{legend:{position:'bottom',labels:{color:textColor,font:{size:11,family:'Cairo',weight:'bold'}}}}}});}
+    
+    const days=[],counts=[];
+    for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];days.push(ds.substring(5));const entry=dailyLog.find(l=>l.date===ds);counts.push(entry?(entry.dCount||0):0);}
+    if(window.chartInstances&&chartInstances.week)chartInstances.week.destroy();
+    const ctxW=document.getElementById('chartWeek');
+    if(ctxW){window.chartInstances=window.chartInstances||{};chartInstances.week=new Chart(ctxW,{type:'bar',data:{labels:days,datasets:[{label:'',data:counts,backgroundColor:'#0a84ff',borderRadius:6}]},options:{scales:{y:{beginAtZero:true,ticks:{color:textColor,stepSize:1,family:'Cairo'}},x:{ticks:{color:textColor,font:{size:10,family:'Cairo'}}}},plugins:{legend:{display:false}}}});}
+}
+
+function updateStreak(){const log=JSON.parse(localStorage.getItem('dailyLog_v1')||'[]');let streak=0;const dates=log.filter(l=>l.dCount>0).map(l=>l.date).sort().reverse();let checkDate=new Date();checkDate.setHours(0,0,0,0);for(let i=0;i<365;i++){const ds=checkDate.toISOString().split('T')[0];if(dates.includes(ds))streak++;else if(i>0)break;checkDate.setDate(checkDate.getDate()-1);}const el=document.getElementById('streakNum');if(el)el.textContent=streak;}
+function renderBadges(){const crm=JSON.parse(localStorage.getItem('crm_v6')||'[]');const dailyLog=JSON.parse(localStorage.getItem('dailyLog_v1')||'[]');const activatedCount=crm.filter(c=>c.status==='activated').length;const totalContracts=dailyLog.reduce((s,e)=>s+(e.dCount||0),0);const totalAmount=crm.filter(c=>c.status==='activated').reduce((s,c)=>s+(c.amount||0),0);const badges=[{icon:'🌟',name:'أول عميل',unlocked:crm.length>=1},{icon:'🎯',name:'10 عملاء',unlocked:crm.length>=10},{icon:'🏅',name:'50 عميل',unlocked:crm.length>=50},{icon:'💎',name:'10 تفعيلات',unlocked:activatedCount>=10},{icon:'👑',name:'50 تفعيل',unlocked:activatedCount>=50},{icon:'💰',name:'100K',unlocked:totalAmount>=100000},{icon:'🏆',name:'مليون',unlocked:totalAmount>=1000000},{icon:'🔥',name:'30 يوم',unlocked:dailyLog.length>=30},{icon:'📄',name:'أول عقد',unlocked:totalContracts>=1}];const el=document.getElementById('badgesRow');if(!el)return;el.innerHTML=badges.map(b=>`<div class="badge-item ${b.unlocked?'unlocked':''}"><div class="icon">${b.icon}</div><div>${b.name}</div></div>`).join('');}
+function updateProjection(){const log=JSON.parse(localStorage.getItem('dailyLog_v1')||'[]');const now=new Date();const monthStr=now.toISOString().substring(0,7);const dayOfMonth=now.getDate();const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();const monthlyTotal=log.filter(e=>e.date.startsWith(monthStr)).reduce((s,e)=>s+(e.dCount||0),0);const dailyRate=dayOfMonth>0?monthlyTotal/dayOfMonth:0;const projected=Math.round(dailyRate*daysInMonth);const prevDate=new Date(now.getFullYear(),now.getMonth()-1,1);const prevMonthStr=prevDate.toISOString().substring(0,7);const prevMonthTotal=log.filter(e=>e.date.startsWith(prevMonthStr)).reduce((s,e)=>s+(e.dCount||0),0);const compare=prevMonthTotal>0?Math.round(((monthlyTotal-prevMonthTotal)/prevMonthTotal)*100):0;const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};set('projRate',dailyRate.toFixed(1)+' / يوم');set('projEnd',projected+' عقد');if(prevMonthTotal===0)set('projCompare','—');else if(compare>0)set('projCompare','+'+compare+'%');else if(compare<0)set('projCompare',compare+'%');else set('projCompare','0%');}
+
+// CALCULATOR
+function formatNumberInput(input) {
+    let raw = input.value.replace(/,/g, '');
+    if (raw === '') { input.value = ''; return; }
+    if (isNaN(raw)) { input.value = ''; return; }
+    input.value = parseInt(raw, 10).toLocaleString('en-US');
+}
+function syncCalcWithData() {
+    const target = parseFloat(localStorage.getItem('monthlyTarget')) || 0;
+    const achieved = getAutoAchieved();
+    const limit = getAutoLimit() * 1000; // Convert K to EGP
+    document.getElementById('calcTargetManual').value = target;
+    document.getElementById('calcAchievedManual').value = achieved;
+    document.getElementById('calcLimit').value = limit.toLocaleString('en-US');
+    calcNewCommission();
+}
+function calcNewCommission(){
+    const targetC = parseFloat(document.getElementById('calcTargetManual').value) || 0;
+    const achievedC = parseFloat(document.getElementById('calcAchievedManual').value) || 0;
+    let limitStr = document.getElementById('calcLimit').value.replace(/,/g, '');
+    const limit = parseFloat(limitStr) || 0;
+
+    let percent = 0;
+    if (targetC > 0) {
+        percent = (achievedC / targetC) * 100;
+    }
+
+    let rate = 0;
+    if (percent >= 100) rate = 60;
+    else if (percent >= 90) rate = 40;
+    else if (percent >= 80) rate = 25;
+
+    let contractsTotal = achievedC * rate;
+    let bonus = (limit / 1000000) * 1600;
+    let subtotal = contractsTotal + bonus;
+    
+    // Tax Deduction
+    let taxAmount = subtotal * 0.11;
+    let finalTotal = subtotal - taxAmount;
+
+    document.getElementById('calcPercent').innerText = percent.toFixed(1) + '%';
+    document.getElementById('calcRate').innerText = rate + ' ج.م';
+    document.getElementById('calcContractsTotal').innerText = contractsTotal.toLocaleString() + ' ج.م';
+    document.getElementById('calcBonus').innerText = Math.round(bonus).toLocaleString() + ' ج.م';
+    document.getElementById('calcTaxAmount').innerText = Math.round(taxAmount).toLocaleString() + ' ج.م';
+    document.getElementById('calcSubtotal').innerText = Math.round(subtotal).toLocaleString() + ' ج.م';
+    document.getElementById('calcTotal').innerText = Math.round(finalTotal).toLocaleString() + ' ج.م';
+}
+
+function loadAppData(){
+    applyLanguage();
+    loadTheme();
+    checkDateAndReset();
+    document.getElementById('contractDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('emailDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('startCount').value=parseInt(localStorage.getItem('baseCount'))||'';
+    document.getElementById('startLimit').value=parseInt(localStorage.getItem('baseLimit'))||'';
+    document.getElementById('appCount').value=localStorage.getItem('appCount')||'';
+    document.getElementById('appLimit').value=localStorage.getItem('appLimit')||'';
+    document.getElementById('rejCount').value=localStorage.getItem('rejCount')||'';
+    document.getElementById('reportDate').value=new Date().toISOString().split('T')[0];
+    document.getElementById('senderName').value=localStorage.getItem('senderName')||'';
+    document.getElementById('senderName').addEventListener('input',function(){localStorage.setItem('senderName',this.value);});
+    initEmptyExcel();
+    renderCrm();
+    renderDocs();
+    renderContracts();
+    renderTeam();
+    renderReports();
+    loadEmailTemplate();
+    updateEmailPreview();
+    onReportDateChange();
+    renderDashboard();
+    updateCrmBadge();
+    syncCalcWithData();
+}
+
+window.onload = function(){
+    loadAppData();
+    runAutoCleanup();
+};
+</script>
+</body>
+</html>
